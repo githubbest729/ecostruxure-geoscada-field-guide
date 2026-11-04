@@ -55,6 +55,7 @@
         <li><a href="#t5" data-nav="t5">5 · Commissioning</a></li>
         <li class="nav-label">DNP3 &amp; Extended Procedures</li>
         <li><a href="#dnp3" data-nav="dnp3">DNP3 Implementation</a></li>
+        <li><a href="#mqtt" data-nav="mqtt">MQTT Implementation</a></li>
         <li><a href="#t6" data-nav="t6">6 · Logic Engine (ST)</a></li>
         <li><a href="#t7" data-nav="t7">7 · Historic &amp; Archiving</a></li>
         <li><a href="#t8" data-nav="t8">8 · Security &amp; Roles</a></li>
@@ -93,6 +94,7 @@
           <a class="card" href="#t4" data-nav="t4"><h2>4 · Alarms &amp; Redirection</h2><p>Priorities, escalation, suppression during commissioning.</p></a>
           <a class="card" href="#t5" data-nav="t5"><h2>5 · Commissioning</h2><p>Server Status, comms logging, end-to-end loop tests.</p></a>
           <a class="card" href="#dnp3" data-nav="dnp3"><h2>DNP3 Implementation</h2><p>Channel → Outstation Set → Outstation → Points, with ViewX menu paths.</p></a>
+          <a class="card" href="#mqtt" data-nav="mqtt"><h2>MQTT Implementation</h2><p>Broker → Device → Point, TLS, and mosquitto test commands.</p></a>
           <a class="card" href="#t6" data-nav="t6"><h2>6 · Logic Engine</h2><p>Structured Text lead/lag logic and execution modes.</p></a>
           <a class="card" href="#t7" data-nav="t7"><h2>7 · Historic &amp; Archiving</h2><p>Significant change, lifetime, archive volumes.</p></a>
           <a class="card" href="#t8" data-nav="t8"><h2>8 · Security &amp; Roles</h2><p>User groups, branch permissions, action confirmation.</p></a>
@@ -461,6 +463,110 @@
           <h3>Lock Diagnostics (Read / Write Locks)</h3>
           <p>Counters tracking database access concurrency between driver threads, logic engines, and client sessions.</p>
           <p><span class="tag">Rule</span> Sustained write-lock spikes can point to poorly scheduled logic programs doing heavy database-wide work. Check logic execution modes first (Procedure 6).</p>
+        </article>
+
+        <h2 id="g-ident">Object Identification, Context Actions &amp; Navigation</h2>
+        <article class="term" id="term-altname" data-search-item data-title="Alternative Name (Configurable Tab Names)" data-section="Glossary · Identification">
+          <h3>Alternative Name (Configurable Tab Names)</h3>
+          <p>A secondary label on an item's <strong>Identification</strong> tab that replaces the database name on ViewX document tabs, alarm lists, and navigation menus.</p>
+          <p><span class="tag">Context</span> Fixes tab clutter when several mimics share names like <code>Overview</code> or <code>Default</code>.</p>
+          <p><span class="tag">Example</span> Three open <code>Overview</code> mimics show tabs <code>WPS01 Overview</code>, <code>WPS02 Overview</code>, and <code>SSF01 Overview</code>.</p>
+        </article>
+        <article class="term" id="term-trip" data-search-item data-title="Trip Characters (Substitution Tokens)" data-section="Glossary · Identification">
+          <h3>Trip Characters (Substitution Tokens)</h3>
+          <p>Macro expressions between <code>%</code> signs that evaluate against the object's metadata or parent hierarchy. Define dynamic names once in a Group Template and they resolve per instance, with no property overrides.</p>
+          <p><code>%OParentGroupId.Name%</code> = parent group name (<code>WPS01</code>)<br><code>%OName%</code> = the item's own name (<code>Overview</code>)<br><code>%OParentGroupId.Name% %OName%</code> = <code>WPS01 Overview</code></p>
+          <p><span class="tag">Check</span> Token syntax is as supplied in the agac.ae notes; confirm in the Geo SCADA help for your release.</p>
+        </article>
+        <article class="term" id="term-helpview" data-search-item data-title="Help View & Mobile Help View" data-section="Glossary · Identification">
+          <h3>Help View &amp; Mobile Help View</h3>
+          <p>Path properties linking an object to an instructional mimic, PDF manual, or URL. Users click <strong>Go To</strong> to open the procedure. <em>Mobile Help View</em> points to a layout optimised for tablets and Virtual ViewX.</p>
+          <p><span class="tag">Example</span> <code>AGAC.DXB.WPS01.Pump1</code> linked to SOP-MEC-012 for mechanical seal maintenance.</p>
+        </article>
+        <article class="term" id="term-exclexcl" data-search-item data-title="Exclude From Exclusive Control" data-section="Glossary · Identification">
+          <h3>Exclude From Exclusive Control</h3>
+          <p>A flag on an object's form that lets users still interact with, control, or acknowledge alarms on that item while its group is under Exclusive Control.</p>
+          <p><span class="tag">Context</span> Keeps routine operator actions available on non-process-critical items (such as diagnostic monitors) during configuration. Never set it on items that must be locked during testing.</p>
+        </article>
+        <article class="term" id="term-safetydev" data-search-item data-title="Safety Device" data-section="Glossary · Identification">
+          <h3>Safety Device</h3>
+          <p>A flag marking critical interlocks, ESD signals, or SIL-rated sensors. It adds stricter confirmation dialogs, audit tracking, and restricted override permissions before manual control or disable actions.</p>
+          <p><span class="tag">Check</span> Exact behavior depends on release and security setup; test with a real operator account.</p>
+        </article>
+        <article class="term" id="term-locatetemplate" data-search-item data-title="Locate In Template" data-section="Glossary · Identification">
+          <h3>Locate In Template</h3>
+          <p>A context command on Group Instance items that moves the Database Bar focus to the master template item.</p>
+          <p><span class="tag">Context</span> Use when a change must cascade to all stations. Change the template, not the instance.</p>
+        </article>
+        <article class="term" id="term-dispref" data-search-item data-title="Display References" data-section="Glossary · Identification">
+          <h3>Display References</h3>
+          <p>An audit tool listing every mimic animation, logic program, alarm redirection rule, and trend trace that references the selected item.</p>
+          <p><span class="tag">Context</span> Run it before deleting or renaming an item to avoid orphan references and broken bindings.</p>
+        </article>
+        <article class="term" id="term-proprchg" data-search-item data-title="Display Property Changes" data-section="Glossary · Identification">
+          <h3>Display Property Changes</h3>
+          <p>An audit-trail viewer showing who changed a database property, the old and new values, and when.</p>
+        </article>
+        <article class="term" id="term-opcexp" data-search-item data-title="Locate in OPC Data Explorer" data-section="Glossary · Identification">
+          <h3>Locate in OPC Data Explorer</h3>
+          <p>Positions the selected point in the internal OPC DA / UA browsing hierarchy.</p>
+          <p><span class="tag">Context</span> Used to verify OPC item IDs and what a third-party OPC client would see.</p>
+        </article>
+
+        <h2 id="g-mqtt">MQTT Driver &amp; IoT Terminology</h2>
+        <p class="muted">Step-by-step setup is on the <a href="#mqtt" data-nav="mqtt">MQTT Implementation</a> page.</p>
+        <article class="term" id="term-mqttbroker" data-search-item data-title="MQTT Broker Object" data-section="Glossary · MQTT">
+          <h3>MQTT Broker Object</h3>
+          <p>The server node (for example Mosquitto, EMQX, HiveMQ) that receives published messages and distributes them to subscribers. In Geo SCADA it is the <code>MQTT Broker</code> database object.</p>
+          <p><strong>Broker Host Address</strong>: hostname or IP (<code>127.0.0.1</code> for local, or an edge gateway).<br><strong>Port</strong>: <code>1883</code> unencrypted, <code>8883</code> TLS.<br><strong>Client Identifier</strong>: unique string for this Geo SCADA instance.<br><strong>Retry Interval</strong>: delay before reconnecting after a drop (default <code>30S</code>).</p>
+        </article>
+        <article class="term" id="term-mqttpayload" data-search-item data-title="MQTT Payload Formats: JSON "A" vs. Sparkplug B" data-section="Glossary · MQTT">
+          <h3>MQTT Payload Formats: JSON "A" vs. Sparkplug B</h3>
+          <p><strong>JSON "A"</strong>: human-readable key/value JSON. Points bind by tag name, with no register offsets.<br><strong>Sparkplug B</strong>: industrial payload standard on Protocol Buffers, adding state awareness, birth/death certificates, and automatic discovery.</p>
+          <p><span class="tag">Check</span> Confirm which payload formats your release and licence support.</p>
+        </article>
+        <article class="term" id="term-mqttdevice" data-search-item data-title="MQTT Device Object" data-section="Glossary · MQTT">
+          <h3>MQTT Device Object</h3>
+          <p>A logical item for a field edge device or sensor pod that groups points sharing a topic path.</p>
+          <p><strong>Topic Prefix</strong>: base topic the driver subscribes to (for example <code>East/MyDevice1</code>). Points append their tag names.<br><strong>Reported time offset from UTC</strong>: hours added when the device publishes local-time timestamps instead of UTC (<code>0</code>).</p>
+        </article>
+        <article class="term" id="term-mqtttag" data-search-item data-title="Tag Name (JSON Key Binding)" data-section="Glossary · MQTT">
+          <h3>Tag Name (JSON Key Binding)</h3>
+          <p>The exact, case-sensitive JSON key a point reads, for example <code>Analog1</code>.</p>
+          <p><span class="tag">Example</span> A message <code>{"Analog1": 78.5}</code> on <code>East/MyDevice1</code> updates the point whose Device Topic Prefix is <code>East/MyDevice1</code> and Tag Name is <code>Analog1</code>.</p>
+        </article>
+        <article class="term" id="term-mqttclientid" data-search-item data-title="Client Identifier" data-section="Glossary · MQTT">
+          <h3>Client Identifier</h3>
+          <p>A required, unique string (for example <code>GeoSCADA</code>) that identifies the TCP session to the broker.</p>
+          <p><span class="tag">Rule</span> Must not be empty. If two clients share an identifier, the broker repeatedly drops and reconnects both.</p>
+        </article>
+        <article class="term" id="term-mqtttls" data-search-item data-title="Certificate-Based Security (MQTTS): Trust Store & Key Store" data-section="Glossary · MQTT">
+          <h3>Certificate-Based Security (MQTTS): Trust Store &amp; Key Store</h3>
+          <p>TLS with certificates on both sides (mutual TLS) secures edge traffic across public internet or cellular links and stops unauthorised brokers or devices injecting false data.</p>
+          <p><strong>Trust Store</strong>: Root/Intermediate CA certificates used to validate the broker (<em>Check Server Certificate</em>).<br><strong>Key Store</strong>: the Geo SCADA client certificate and private key when mutual TLS is enforced (<em>Send Client Certificate</em>).</p>
+          <p><span class="tag">Context</span> Typically port <code>8883</code>. Manage certificate expiry dates; an expired certificate silently stops telemetry.</p>
+        </article>
+        <article class="term" id="term-mosq" data-search-item data-title="mosquitto_sub & mosquitto_pub (CLI diagnostics)" data-section="Glossary · MQTT">
+          <h3>mosquitto_sub &amp; mosquitto_pub (CLI diagnostics)</h3>
+          <p>Command-line client tools from the Mosquitto suite. <code>mosquitto_sub</code> prints messages on a topic in real time; <code>mosquitto_pub</code> publishes a test message.</p>
+          <p><span class="tag">Context</span> Use <code>mosquitto_sub</code> first to prove the device or simulator is publishing before blaming Geo SCADA settings. Use <code>mosquitto_pub</code> to dry-test scaling and alarm limits with no hardware.</p>
+          <p><span class="tag">Note</span> MQTT topic levels use a forward slash (<code>East/MyDevice1</code>). A backslash is a different topic and will not match.</p>
+        </article>
+
+        <h2 id="g-alarmlimits">Point Alarm Limits &amp; Alarm Routing</h2>
+        <article class="term" id="term-masterlimits" data-search-item data-title="Master Station Alarm Limits (Multi-Tier Thresholds)" data-section="Glossary · Alarms">
+          <h3>Master Station Alarm Limits (Multi-Tier Thresholds)</h3>
+          <p>Thresholds calculated inside Geo SCADA rather than reported by the field device.</p>
+          <p><strong>Full Scale / Zero Scale</strong>: physical span (for example 0 to 100).<br><strong>Overrange / Underrange</strong>: detects transducer faults or ADC clipping outside the valid range.<br><strong>High High / High / Low / Low Low</strong>: four trip points, each with its own severity (for example High, Medium, None) and description.</p>
+        </article>
+        <article class="term" id="term-parked" data-search-item data-title="Parked Severity" data-section="Glossary · Alarms">
+          <h3>Parked Severity</h3>
+          <p>An alarm category for conditions that exist but are deferred or awaiting maintenance triage, kept out of the active operator banner.</p>
+          <p><span class="tag">Check</span> Confirm exactly how your release treats parked alarms (logging, return-to-normal, review) before using it as a substitute for shelving procedures.</p>
+        </article>
+        <article class="term" id="term-aoi" data-search-item data-title="Area Of Interest (AOI)" data-section="Glossary · Alarms">
+          <h3>Area Of Interest (AOI)</h3>
+          <p>A geographic or operational partition (for example <code>World</code>, <code>DXB</code>, <code>Plant1</code>) that filters alarms and events so operators see only their sector.</p>
         </article>
 
         <h2 id="g-logic">Logic &amp; Scripting</h2>
@@ -1229,8 +1335,80 @@ END_PROGRAM</code></pre>
         </ul>
       </section>
 
+      <!-- MQTT -->
+      <section class="view" data-view="mqtt" id="mqtt" hidden>
+        <h1>MQTT Implementation Guide</h1>
+        <p class="lead">End-to-end hierarchy: <strong>MQTT Broker → MQTT Device → Points</strong>, with command-line test tools.</p>
+        <div class="callout warn" role="note"><strong>Verify menus.</strong> Object and field names follow the agac.ae notes. Confirm exact menu paths for your release.</div>
+        <div class="callout safety" role="note"><strong>Safety.</strong> Use TLS and per-device credentials for anything beyond a local test. Do not publish test values to a production broker topic that feeds live points.</div>
+
+        <h2 id="mqtt-tree" data-search-item data-title="MQTT · Object tree" data-section="MQTT Guide">Object tree</h2>
+<pre class="code" data-lang="text"><code>AGAC.DXB.WPS01
+ └── MQTT_Broker             [Broker Host 127.0.0.1  Port 1883/8883  ClientId GeoSCADA]
+      └── MyDevice1          [Topic Prefix East/MyDevice1]
+           └── Analog1       [JSON A Analog Point, Tag Name Analog1]</code></pre>
+
+        <h2 id="mqtt-s1" data-search-item data-title="MQTT · Step 1 Broker object" data-section="MQTT Guide">Step 1 · Create the MQTT Broker object</h2>
+        <ol class="steps">
+          <li>Create the <strong>MQTT Broker</strong> object under the site group.</li>
+          <li>Set <strong>Broker Host Address</strong> (<code>127.0.0.1</code> for a local broker, or the gateway IP).</li>
+          <li>Set <strong>Port</strong>: <code>1883</code> for a lab test, <code>8883</code> for TLS.</li>
+          <li>Set a unique, non-empty <strong>Client Identifier</strong>, for example <code>GeoSCADA</code>. Never reuse it on another client.</li>
+          <li>Leave <strong>Retry Interval</strong> at <code>30S</code> unless the link needs faster recovery.</li>
+          <li>Set <strong>In Service</strong> and save.</li>
+        </ol>
+
+        <h2 id="mqtt-s2" data-search-item data-title="MQTT · Step 2 TLS Trust Store and Key Store" data-section="MQTT Guide">Step 2 · TLS: Trust Store and Key Store</h2>
+        <ol class="steps">
+          <li>Import the Root/Intermediate CA certificates into a <strong>Trust Store</strong> and enable <em>Check Server Certificate</em>.</li>
+          <li>For mutual TLS, import the Geo SCADA client certificate and private key into a <strong>Key Store</strong> and enable <em>Send Client Certificate</em>.</li>
+          <li>Switch the port to <code>8883</code> and confirm the broker accepts the connection.</li>
+          <li>Record certificate expiry dates in the site maintenance calendar.</li>
+        </ol>
+
+        <h2 id="mqtt-s3" data-search-item data-title="MQTT · Step 3 Device object and Topic Prefix" data-section="MQTT Guide">Step 3 · Create the MQTT Device</h2>
+        <ol class="steps">
+          <li>Create an <strong>MQTT Device</strong> under the broker for each field device or sensor pod.</li>
+          <li>Set <strong>Topic Prefix</strong>, for example <code>East/MyDevice1</code>.</li>
+          <li>Set <strong>Reported time offset from UTC</strong> to <code>0</code> if the device publishes UTC, or to the local offset if it publishes local time.</li>
+        </ol>
+
+        <h2 id="mqtt-s4" data-search-item data-title="MQTT · Step 4 JSON A points and alarm limits" data-section="MQTT Guide">Step 4 · Add JSON "A" points and alarm limits</h2>
+        <ol class="steps">
+          <li>Create a <strong>JSON A Analog Point</strong> under the device.</li>
+          <li>Set <strong>Tag Name</strong> to the exact, case-sensitive JSON key (for example <code>Analog1</code>).</li>
+          <li>Set <strong>Zero Scale / Full Scale</strong> (for example <code>0</code> to <code>100</code>) and engineering units.</li>
+          <li>Set <strong>Overrange / Underrange</strong> to catch transducer faults.</li>
+          <li>Set <strong>High High / High / Low / Low Low</strong> with a severity and description for each.</li>
+          <li>Set the point's <strong>Area of Interest</strong> so the right operators see the alarms.</li>
+        </ol>
+
+        <h2 id="mqtt-s5" data-search-item data-title="MQTT · Step 5 Test with mosquitto_sub and mosquitto_pub" data-section="MQTT Guide">Step 5 · Test with mosquitto_sub and mosquitto_pub</h2>
+        <p>Run on a machine that can reach the broker. First prove the device is publishing:</p>
+<pre class="code" data-lang="bash"><code>mosquitto_sub -h 127.0.0.1 -p 1883 -t "East/MyDevice1"</code></pre>
+        <p>Then inject a test value (Linux/macOS shell):</p>
+<pre class="code" data-lang="bash"><code>mosquitto_pub -h 127.0.0.1 -p 1883 -t "East/MyDevice1" -m '{"Analog1": 45.2}'</code></pre>
+        <p>On Windows Command Prompt, escape the inner quotes instead:</p>
+<pre class="code" data-lang="bat"><code>mosquitto_pub -h 127.0.0.1 -p 1883 -t "East/MyDevice1" -m "{\"Analog1\": 45.2}"</code></pre>
+        <p class="muted small">Use forward slashes in topics. Add <code>-u</code>/<code>-P</code> or TLS options (<code>--cafile</code>, <code>--cert</code>, <code>--key</code>) when the broker requires them.</p>
+        <ol class="steps">
+          <li>Publish values below, inside, and above the alarm limits (for example 5, 50, 95).</li>
+          <li>Confirm the point value, scaling, alarm severity, and event log entries in ViewX.</li>
+          <li>Stop the publisher and confirm the point goes stale or fails as expected.</li>
+        </ol>
+        <h3>Verification</h3>
+        <ul class="checklist" data-check="mqtt">
+          <li><label><input type="checkbox"> Broker object connected; Client Identifier unique</label></li>
+          <li><label><input type="checkbox"> mosquitto_sub shows the device publishing</label></li>
+          <li><label><input type="checkbox"> Topic Prefix and Tag Name match the payload exactly (case-sensitive)</label></li>
+          <li><label><input type="checkbox"> Alarm limits trigger at test values with the right severity</label></li>
+          <li><label><input type="checkbox"> TLS verified; certificate expiry recorded</label></li>
+          <li><label><input type="checkbox"> Test publishers removed from production topics</label></li>
+        </ul>
+      </section>
+
       <footer class="footer">
-        <p>agac.ae · EcoStruxure Geo SCADA Field Engineering Guide · v1.5.0. Independent engineering reference; not an official Schneider Electric document. Verify against vendor documentation.</p>
+        <p>agac.ae · EcoStruxure Geo SCADA Field Engineering Guide · v1.6.0. Independent engineering reference; not an official Schneider Electric document. Verify against vendor documentation.</p>
       </footer>
     </main>
   </div>
