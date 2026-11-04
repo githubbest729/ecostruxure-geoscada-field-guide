@@ -56,6 +56,7 @@
         <li class="nav-label">DNP3 &amp; Extended Procedures</li>
         <li><a href="#dnp3" data-nav="dnp3">DNP3 Implementation</a></li>
         <li><a href="#mqtt" data-nav="mqtt">MQTT Implementation</a></li>
+        <li><a href="#sparkplug" data-nav="sparkplug">Sparkplug B &amp; Node-RED</a></li>
         <li><a href="#t6" data-nav="t6">6 · Logic Engine (ST)</a></li>
         <li><a href="#t7" data-nav="t7">7 · Historic &amp; Archiving</a></li>
         <li><a href="#t8" data-nav="t8">8 · Security &amp; Roles</a></li>
@@ -95,6 +96,7 @@
           <a class="card" href="#t5" data-nav="t5"><h2>5 · Commissioning</h2><p>Server Status, comms logging, end-to-end loop tests.</p></a>
           <a class="card" href="#dnp3" data-nav="dnp3"><h2>DNP3 Implementation</h2><p>Channel → Outstation Set → Outstation → Points, with ViewX menu paths.</p></a>
           <a class="card" href="#mqtt" data-nav="mqtt"><h2>MQTT Implementation</h2><p>Broker → Device → Point, TLS, and mosquitto test commands.</p></a>
+          <a class="card" href="#sparkplug" data-nav="sparkplug"><h2>Sparkplug B &amp; Node-RED</h2><p>Auto-discovery broker, birth certificates, simulated edge node.</p></a>
           <a class="card" href="#t6" data-nav="t6"><h2>6 · Logic Engine</h2><p>Structured Text lead/lag logic and execution modes.</p></a>
           <a class="card" href="#t7" data-nav="t7"><h2>7 · Historic &amp; Archiving</h2><p>Significant change, lifetime, archive volumes.</p></a>
           <a class="card" href="#t8" data-nav="t8"><h2>8 · Security &amp; Roles</h2><p>User groups, branch permissions, action confirmation.</p></a>
@@ -569,6 +571,99 @@
           <p>A geographic or operational partition (for example <code>World</code>, <code>DXB</code>, <code>Plant1</code>) that filters alarms and events so operators see only their sector.</p>
         </article>
 
+        <h2 id="g-ddk">DDK Driver Architecture &amp; Extensibility</h2>
+        <article class="term" id="term-ddk" data-search-item data-title="Driver Development Kit (DDK)" data-section="Glossary · DDK">
+          <h3>Driver Development Kit (DDK)</h3>
+          <p>A .NET (C#) and C++ framework and API from Schneider Electric for building custom communications drivers that run as native server tasks in Geo SCADA Expert.</p>
+          <p><span class="tag">Context</span> Used for proprietary devices, legacy controllers, or IoT protocols without an off-the-shelf driver, such as a custom MQTT client.</p>
+        </article>
+        <article class="term" id="term-ddkasm" data-search-item data-title="ControlMicrosystems.ClearSCADA.DDK Assembly" data-section="Glossary · DDK">
+          <h3>ControlMicrosystems.ClearSCADA.DDK Assembly</h3>
+          <p>The managed .NET assembly a driver project references. It exposes base classes for channels, outstations, point scanning, alarms, and historization.</p>
+        </article>
+        <article class="term" id="term-ddkparts" data-search-item data-title="Driver EXE vs. Driver DLL" data-section="Glossary · DDK">
+          <h3>Driver EXE vs. Driver DLL</h3>
+          <p><strong>Driver EXE</strong> (<code>TaskName</code>, for example <code>DriverMQTTClient.exe</code>): an isolated process started by the server service. A leak or crash in one driver does not take down the database server.<br><strong>Driver DLL</strong> (<code>AssemblyName</code>, for example <code>MQTTClient.dll</code>): the class library with protocol logic, packet parsers, object schema, and ViewX configuration forms.</p>
+        </article>
+        <article class="term" id="term-automation" data-search-item data-title=".NET Automation & Web Interfaces (SOAP / XML)" data-section="Glossary · DDK">
+          <h3>.NET Automation &amp; Web Interfaces (SOAP / XML)</h3>
+          <p>Server-side programmatic interfaces for third-party software, ERPs, and web front ends to read points, acknowledge alarms, or change configuration without ViewX.</p>
+          <p><span class="tag">Security</span> Treat these as privileged interfaces: use dedicated service accounts with minimum rights and restrict network access.</p>
+        </article>
+        <article class="term" id="term-registry" data-search-item data-title="Driver Registration & Logging (Windows Registry)" data-section="Glossary · DDK">
+          <h3>Driver Registration &amp; Logging (Windows Registry)</h3>
+          <p>A compiled DDK driver is registered under the Geo SCADA driver key in the Windows registry (for example <code>HKLM\SOFTWARE\Schneider Electric\ClearSCADA\Driver…</code>). Key values:</p>
+          <p><code>AssemblyName</code>: path to the driver DLL.<br><code>TaskName</code>: host executable the server starts.<br><code>DebugMode</code>: enables a debugger attach (True/False).<br><code>LogEnable</code>: writes protocol frames and driver errors to file.<br><code>LogLevel</code>: verbosity bitmask, for example <code>0x0000000f</code> (15).<br><code>LogFileBase</code>: log directory and file prefix.<br><code>LogMaxSize</code> / <code>LogMaxFiles</code>: rotation limits, for example 2048 KB and 2 files.</p>
+          <p><span class="tag">Safety</span> Back up the key and edit only with change approval. Leave DebugMode off in production and turn verbose logging back down after use so logs cannot fill the disk. Path and values vary by release.</p>
+        </article>
+        <article class="term" id="term-dbstartup" data-search-item data-title="DBStartup_001.log" data-section="Glossary · Server logs">
+          <h3>DBStartup_001.log</h3>
+          <p>The bootstrap log recording every step while the database is mounted into memory. First log to read when the server will not start or loops on boot.</p>
+          <p><span class="tag">Contains</span> Consistency checks, schema validation, driver registration failures, port conflicts, and corrupted archive volumes.</p>
+        </article>
+        <article class="term" id="term-dbsnapshot" data-search-item data-title="DBSnapshot_001.log" data-section="Glossary · Server logs">
+          <h3>DBSnapshot_001.log</h3>
+          <p>Status and timing of periodic background snapshots of database memory to disk.</p>
+        </article>
+        <article class="term" id="term-dblogs" data-search-item data-title="DB_001.log … DB_004.log" data-section="Glossary · Server logs">
+          <h3>DB_001.log … DB_004.log</h3>
+          <p>Rolling operational logs covering server health, client connections, driver heartbeats, and redundancy failovers. Reached from the Server Status context menu; file names and counts may vary by release.</p>
+        </article>
+        <article class="term" id="term-customobj" data-search-item data-title="Custom DDK Object Menu (MQTT Client)" data-section="Glossary · DDK">
+          <h3>Custom DDK Object Menu (MQTT Client)</h3>
+          <p>Once registered, a custom driver adds its own submenu to the ViewX create list, for example <strong>Create New → MQTT Client → MQTT Broker / Analogue / Digital / String / Time</strong>. This is the custom DDK client, separate from the built-in MQTT and Sparkplug objects.</p>
+        </article>
+        <article class="term" id="term-qos" data-search-item data-title="QoS Type (Quality of Service)" data-section="Glossary · MQTT">
+          <h3>QoS Type (Quality of Service)</h3>
+          <p>MQTT delivery guarantee per point or channel:<br><strong>At Most Once (QoS 0)</strong>: best effort, no acknowledgement, loss possible.<br><strong>At Least Once (QoS 1)</strong>: broker acknowledges; duplicates possible on retry.<br><strong>Exactly Once (QoS 2)</strong>: four-step handshake for single delivery; use for commands, billing, and alarms.</p>
+          <p><span class="tag">Tradeoff</span> Higher QoS adds latency and bandwidth. Make control writes idempotent where QoS 1 is used.</p>
+        </article>
+        <article class="term" id="term-controltopic" data-search-item data-title="Control Topic" data-section="Glossary · MQTT">
+          <h3>Control Topic</h3>
+          <p>A separate topic on an analog or digital point reserved for outbound commands and setpoint writes. It keeps the inbound reading topic (<code>Topic</code>) apart from the command topic (<code>ControlTopic</code>) to avoid command echoes.</p>
+        </article>
+
+        <h2 id="g-sparkplug">Sparkplug B</h2>
+        <p class="muted">Setup steps are on the <a href="#sparkplug" data-nav="sparkplug">Sparkplug B &amp; Node-RED</a> page.</p>
+        <article class="term" id="term-spb" data-search-item data-title="Sparkplug B (spBv1.0 namespace)" data-section="Glossary · Sparkplug B">
+          <h3>Sparkplug B (spBv1.0 namespace)</h3>
+          <p>An open payload and topic standard over MQTT that uses Google Protocol Buffers and adds an OT data model: typed metrics, explicit state, and birth/death messages.</p>
+          <p><span class="tag">Topic</span> <code>spBv1.0/&lt;Group_ID&gt;/&lt;Message_Type&gt;/&lt;Edge_Node_ID&gt;[/&lt;Device_ID&gt;]</code></p>
+          <p><span class="tag">Context</span> Unlike raw JSON, where each tag is engineered by hand, a Sparkplug device declares its metrics and types, so the host can build points automatically.</p>
+        </article>
+        <article class="term" id="term-birth" data-search-item data-title="NBIRTH & DBIRTH (Birth Certificates)" data-section="Glossary · Sparkplug B">
+          <h3>NBIRTH &amp; DBIRTH (Birth Certificates)</h3>
+          <p>Messages sent when a node or device connects or recovers. <strong>NBIRTH</strong> registers the edge node and its diagnostic metrics. <strong>DBIRTH</strong> registers a connected device, declaring metric names, data types, aliases, and initial values.</p>
+          <p><span class="tag">Impact</span> With Automatic Configure on, Geo SCADA creates the matching points without manual work.</p>
+        </article>
+        <article class="term" id="term-death" data-search-item data-title="NDEATH & DDEATH (Death Certificates)" data-section="Glossary · Sparkplug B">
+          <h3>NDEATH &amp; DDEATH (Death Certificates)</h3>
+          <p><strong>NDEATH</strong> is the MQTT Last Will and Testament registered with the broker at connect; the broker publishes it if the node drops unexpectedly. <strong>DDEATH</strong> is published by the edge node when a downstream device goes offline.</p>
+          <p><span class="tag">Impact</span> Geo SCADA marks the associated points bad / comms-failed promptly, so operators do not act on stale data.</p>
+        </article>
+        <article class="term" id="term-ddata" data-search-item data-title="NDATA & DDATA" data-section="Glossary · Sparkplug B">
+          <h3>NDATA &amp; DDATA</h3>
+          <p>Regular payloads carrying only metrics that changed (report by exception), conserving bandwidth.</p>
+        </article>
+        <article class="term" id="term-hostid" data-search-item data-title="SCADA Host Id" data-section="Glossary · Sparkplug B">
+          <h3>SCADA Host Id</h3>
+          <p>The unique application name of Geo SCADA on the Sparkplug network (for example <code>HostA</code>). When the host connects it publishes a <code>STATE</code> message so edge nodes send fresh birth certificates.</p>
+        </article>
+        <article class="term" id="term-groupid" data-search-item data-title="Group Id, Edge Node ID & Device ID" data-section="Glossary · Sparkplug B">
+          <h3>Group Id, Edge Node ID &amp; Device ID</h3>
+          <p><strong>Group Id</strong>: the regional or operational grouping in the topic (for example <code>SparkplugDevices</code> or <code>agac_dxb</code>).<br><strong>Edge Node ID</strong>: the gateway or edge computer (for example one running Node-RED).<br><strong>Device ID</strong>: an end device behind the node (for example <code>TestDev2</code>).</p>
+        </article>
+        <article class="term" id="term-autoconf" data-search-item data-title="Automatic Configure (Auto-Discovery Engine)" data-section="Glossary · Sparkplug B">
+          <h3>Automatic Configure (Auto-Discovery Engine)</h3>
+          <p>A checkbox on the broker form. Geo SCADA connects back to its own database server (port <code>5481</code>) with a <em>Configuration User Name</em> and <em>Password</em>, and when a DBIRTH arrives it creates the points in the group set by <em>Create Devices or Instances in Group</em>.</p>
+          <p><strong>Node Template / Device Templates</strong>: Group Templates used to stamp out graphics and alarm logic for discovered hardware.<br><strong>Pending Devices for Configuration</strong>: Broker Status counter of discovered devices awaiting generation.</p>
+          <p><span class="tag">Security</span> Use a dedicated account with only the rights needed to create objects in the target group. Review auto-created items, and disable Automatic Configure when commissioning is finished.</p>
+        </article>
+        <article class="term" id="term-enhevents" data-search-item data-title="Enhanced Events" data-section="Glossary · Sparkplug B">
+          <h3>Enhanced Events</h3>
+          <p>A checkbox enabling high-resolution (microsecond) event logging into the sequence-of-events table.</p>
+        </article>
+
         <h2 id="g-logic">Logic &amp; Scripting</h2>
         <article class="term" id="term-st" data-search-item data-title="Structured Text (ST)" data-section="Glossary · Logic">
           <h3>Structured Text (ST)</h3>
@@ -937,8 +1032,17 @@ Events missing                   unsolicited disabled or event class unassigned<
         </ol>
         <p class="muted small">Terms are defined in the <a href="#g-diag" data-nav="glossary">glossary</a>.</p>
 
+        <h2 id="t5-s5" data-search-item data-title="T5 · Server startup and operational logs" data-section="Tutorial 5">Step 5 · Read the server logs</h2>
+        <ol class="steps">
+          <li>Open the log files from the <strong>Server Status</strong> context menu.</li>
+          <li>If the server will not start or loops on boot, read <code>DBStartup_001.log</code> first: look for consistency or schema errors, driver registration failures, port conflicts, and corrupted archive volumes.</li>
+          <li>For intermittent issues read <code>DB_001.log</code> to <code>DB_004.log</code> (client connections, driver heartbeats, redundancy failovers) and <code>DBSnapshot_001.log</code> (snapshot timing).</li>
+          <li>For a single driver, enable that driver's logging at the lowest useful level, reproduce the issue, then turn it back down. Definitions are in the <a href="#g-ddk" data-nav="glossary">glossary</a>.</li>
+        </ol>
+
         <h3>Verification</h3>
         <ul class="checklist" data-check="t5">
+          <li><label><input type="checkbox"> Startup log free of errors after a restart test</label></li>
           <li><label><input type="checkbox"> Top 25 update counts reviewed and noisy points fixed</label></li>
           <li><label><input type="checkbox"> All outstations Online in Server Status</label></li>
           <li><label><input type="checkbox"> Loop sheet signed for every analog and control</label></li>
@@ -1407,8 +1511,95 @@ END_PROGRAM</code></pre>
         </ul>
       </section>
 
+      <!-- SPARKPLUG -->
+      <section class="view" data-view="sparkplug" id="sparkplug" hidden>
+        <h1>Sparkplug B Driver &amp; Node-RED Simulation</h1>
+        <p class="lead">Auto-discovery: a simulated edge node publishes birth certificates and Geo SCADA creates the points itself.</p>
+        <div class="callout warn" role="note"><strong>Verify menus.</strong> Form fields follow the agac.ae screenshots. Confirm names and availability in your release and licence.</div>
+        <div class="callout safety" role="note"><strong>Safety.</strong> Run this on a lab or engineering database and a test broker. Automatic Configure needs an account that can create database objects, so use a dedicated least-privilege account and turn the feature off after commissioning.</div>
+
+        <h2 id="sp-tree" data-search-item data-title="Sparkplug · Object tree" data-section="Sparkplug B Guide">Resulting object tree</h2>
+<pre class="code" data-lang="text"><code>SparkplugB (Group)
+ ├── Broker              [SparkplugB -&gt; Broker]
+ └── Node-REDEdgeNode    [auto-created group]
+      ├── Node           [SparkplugB -&gt; Node]
+      └── TestDev2       [auto-created device group]
+           ├── Analog 06 ... Analog 10
+           └── Binary 01 ... Binary 05</code></pre>
+
+        <h2 id="sp-s1" data-search-item data-title="Sparkplug · Step 1 Configure the broker object" data-section="Sparkplug B Guide">Step 1 · Configure the Geo SCADA Sparkplug B broker</h2>
+        <ol class="steps">
+          <li>Right-click the communications group → <strong>Create New → SparkplugB → Broker</strong>.</li>
+          <li>On the <strong>SparkplugB</strong> tab set:
+            <ul>
+              <li><em>Broker Host</em>: broker IP (for example <code>192.168.86.123</code> or <code>127.0.0.1</code>).</li>
+              <li><em>Broker Port</em>: <code>1883</code> (use <code>8883</code> with TLS outside the lab).</li>
+              <li><em>Namespace</em>: <code>spBv1.0</code>.</li>
+              <li><em>Group Id</em>: <code>SparkplugDevices</code>.</li>
+              <li><em>SCADA Host Id</em>: <code>HostA</code>.</li>
+            </ul>
+          </li>
+          <li>Tick <strong>Automatic Configure</strong>:
+            <ul>
+              <li><em>Server Port</em>: <code>5481</code> (internal database server port).</li>
+              <li><em>Configuration User Name / Password</em>: a dedicated account allowed to create objects in the target group.</li>
+              <li><em>Create Devices or Instances in Group</em>: the target group (for example <code>SparkplugB</code>).</li>
+              <li>Optionally set <em>Node Template</em> and <em>Device Templates</em>.</li>
+            </ul>
+          </li>
+          <li>Set <strong>In Service</strong> and save.</li>
+        </ol>
+        <p><span class="tag">Verify</span> Right-click the broker → <strong>View Status</strong>: <code>State = Online</code>, <code>Quality = Good</code>, <code>Pending Devices for Configuration = 0</code>.</p>
+
+        <h2 id="sp-s2" data-search-item data-title="Sparkplug · Step 2 Node-RED simulated edge node" data-section="Sparkplug B Guide">Step 2 · Configure the Node-RED simulated edge node</h2>
+        <ol class="steps">
+          <li>Open the Node-RED editor in a browser (for example <code>http://192.168.86.123:1880</code>).</li>
+          <li>Add a <strong>Sparkplug Out</strong> node and set:
+            <ul>
+              <li><em>Server</em>: <code>tcp://192.168.86.123</code>, <em>Port</em>: <code>1883</code></li>
+              <li><em>Group ID</em>: <code>SparkplugDevices</code> (must match the broker form)</li>
+              <li><em>Edge Node</em>: <code>Node-REDEdgeNode</code></li>
+              <li><em>Client ID</em>: <code>NodeREDSimpleEdgeNode</code></li>
+              <li><em>Version</em>: Sparkplug B</li>
+            </ul>
+          </li>
+          <li>Place a <strong>Function</strong> node named <code>Create DBIRTH</code> before it:
+<pre class="code" data-lang="javascript"><code>// Topic format is package-specific; check your Sparkplug node's docs.
+msg.topic = "DBIRTH/TestDev2";
+msg.payload = {
+  timestamp: Date.now(),
+  metrics: [
+    { name: "Analog 06", type: "float",   value: 45.8 },
+    { name: "Analog 07", type: "float",   value: 12.3 },
+    { name: "Binary 01", type: "boolean", value: true }
+  ]
+};
+return msg;</code></pre>
+          </li>
+          <li>Click <strong>Deploy</strong>.</li>
+        </ol>
+        <p class="muted small">Some Node-RED Sparkplug packages create NBIRTH automatically and need the device name in <code>msg.topic</code>; others differ. Follow the documentation of the package you installed.</p>
+
+        <h2 id="sp-s3" data-search-item data-title="Sparkplug · Step 3 Verify automatic ingestion" data-section="Sparkplug B Guide">Step 3 · Verify automatic ingestion in Geo SCADA</h2>
+        <ol class="steps">
+          <li>Watch the <strong>Database Bar</strong>: the group <code>Node-REDEdgeNode</code> appears automatically.</li>
+          <li>Inside it, a <code>Node</code> object and a <code>TestDev2</code> device group are created.</li>
+          <li>Open <code>TestDev2</code> and confirm the points exist with correct data types, scaling, and live values.</li>
+          <li>Stop the Node-RED flow (or drop its connection) and confirm the points go bad / comms-failed through the death certificate.</li>
+          <li>Restart it and confirm fresh birth certificates restore the values.</li>
+        </ol>
+        <h3>Verification</h3>
+        <ul class="checklist" data-check="sparkplug">
+          <li><label><input type="checkbox"> Broker Online / Good, Pending Devices = 0</label></li>
+          <li><label><input type="checkbox"> Group Id matches on broker form and edge node</label></li>
+          <li><label><input type="checkbox"> Points auto-created with correct types</label></li>
+          <li><label><input type="checkbox"> Death certificate marks points failed; birth restores them</label></li>
+          <li><label><input type="checkbox"> Configuration account restricted; Automatic Configure disabled after commissioning</label></li>
+        </ul>
+      </section>
+
       <footer class="footer">
-        <p>agac.ae · EcoStruxure Geo SCADA Field Engineering Guide · v1.6.0. Independent engineering reference; not an official Schneider Electric document. Verify against vendor documentation.</p>
+        <p>agac.ae · EcoStruxure Geo SCADA Field Engineering Guide · v1.7.0. Independent engineering reference; not an official Schneider Electric document. Verify against vendor documentation.</p>
       </footer>
     </main>
   </div>
