@@ -6,7 +6,7 @@
 [![Standard - ISA 101 HMI](https://img.shields.io/badge/Standard-ISA--101%20HMI-f59e0b?style=for-the-badge)](https://githubbest729.github.io/ecostruxure-geoscada-field-guide/#t3)
 [![License - MIT](https://img.shields.io/badge/License-MIT-64748b?style=for-the-badge)](LICENSE)
 
-An offline-first, mobile-responsive **Progressive Web App (PWA)** and operational handbook for Schneider Electric **EcoStruxure Geo SCADA Expert** (formerly ClearSCADA), engineered specifically for **agac.ae** automation and field telemetry projects.
+An offline-first, mobile-responsive **Progressive Web App (PWA)** and operational handbook for Schneider Electric **EcoStruxure Geo SCADA Expert** (formerly ClearSCADA), engineered specifically for **** automation and field telemetry projects.
 
 ---
 
@@ -41,7 +41,7 @@ An offline-first, mobile-responsive **Progressive Web App (PWA)** and operationa
 
 ## 🏗️ End-to-End System Architecture
 
-The following diagram illustrates the complete telemetry topology implemented across **agac.ae** projects, connecting field smart devices, IoT edge brokers, and redundant Geo SCADA host servers:
+The following diagram illustrates the complete telemetry topology implemented across **** projects, connecting field smart devices, IoT edge brokers, and redundant Geo SCADA host servers:
 
 ```mermaid
 flowchart TB
@@ -158,7 +158,7 @@ The app includes an extensive offline-searchable glossary covering more than 60 
 | Module | Description | Interface Preview |
 |:---|:---|:---:|
 | **ISA-101 Mimic Sandbox** | Real-time interactive canvas demonstrating situational awareness design, pump status toggling, and wet-well animations. | `Interactive PWA Preview` |
-| **ViewX Ribbon Glossary** | Direct mapping of tools across Home, Edit, Graphics, and View ribbons with agac.ae configuration examples. | `Searchable Glossary` |
+| **ViewX Ribbon Glossary** | Direct mapping of tools across Home, Edit, Graphics, and View ribbons with  configuration examples. | `Searchable Glossary` |
 | **DNP3 Step-by-Step** | 4-tier tree architecture with configuration tabs and field parameter matrices. | `DNP3 Execution Guide` |
 | **Diagnostic Terminal** | Practical examples of `mosquitto_sub` and `mosquitto_pub` command syntax for packet simulation. | `CLI Reference Guide` |
 
@@ -260,10 +260,10 @@ The Service Worker will automatically install the new cache in the background an
 
 > **IMPORTANT SAFETY NOTICE**
 > 
-> Configuration parameters, TCP port numbers, memory offsets, and alarm thresholds documented in this guide represent **agac.ae** engineering standards. Always verify parameters against manufacturer submittals, client specifications, and the Schneider Electric Geo SCADA documentation for your specific software release.
+> Configuration parameters, TCP port numbers, memory offsets, and alarm thresholds documented in this guide represent **** engineering standards. Always verify parameters against manufacturer submittals, client specifications, and the Schneider Electric Geo SCADA documentation for your specific software release.
 > 
 > **Never perform remote hand controls, point forcing, or template schema alterations on a live production SCADA server without an approved Permit to Work (PTW) and client operational clearance.**
 
 ---
 
-*Authored by agac.ae SCADA Systems Engineering Team · Independent Technical Reference (Not an official Schneider Electric publication).*
+*Authored by  SCADA Systems Engineering Team · Independent Technical Reference (Not an official Schneider Electric publication).*
