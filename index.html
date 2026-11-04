@@ -664,6 +664,71 @@
           <p>A checkbox enabling high-resolution (microsecond) event logging into the sequence-of-events table.</p>
         </article>
 
+        <h2 id="g-internal">Internal Points &amp; Alarm Parameterisation</h2>
+        <article class="term" id="term-internal" data-search-item data-title="Internal Points (Internal Analog / Digital)" data-section="Glossary · Internal Points">
+          <h3>Internal Points (Internal Analog / Digital)</h3>
+          <p>Virtual points created under <strong>Create New → Internal</strong> that live only in Geo SCADA memory, with no link to a driver, PLC, or RTU channel.</p>
+          <p><span class="tag">Context</span> Temporary variables, setpoint entries from mimics, results of Structured Text logic, and alarm or animation tests before field telemetry is ready.</p>
+        </article>
+        <article class="term" id="term-hysteresis" data-search-item data-title="Hysteresis (Return-to-Normal Deadband)" data-section="Glossary · Internal Points">
+          <h3>Hysteresis (Return-to-Normal Deadband)</h3>
+          <p>An analog deadband on alarm limits that stops an alarm flapping when the signal hovers on the threshold.</p>
+          <p><span class="tag">Example</span> High alarm <code>75</code> with hysteresis <code>2</code>: the alarm trips at 75 or above and returns to normal only once the value falls below <code>73</code>. Confirm the exact boundary comparison in your release.</p>
+        </article>
+        <article class="term" id="term-tune" data-search-item data-title="Tune Limits" data-section="Glossary · Internal Points">
+          <h3>Tune Limits</h3>
+          <p>Lets authorised operators change alarm trip setpoints from ViewX mimics or context menus without engineering rights.</p>
+          <p><span class="tag">Rule</span> Limits that have been tuned stay tuned after tuning is disabled. Record every tuned limit and reset it to the design value when finished.</p>
+        </article>
+        <article class="term" id="term-statealarms" data-search-item data-title="State Alarms & Granular AOI Routing" data-section="Glossary · Internal Points">
+          <h3>State Alarms &amp; Granular AOI Routing</h3>
+          <p>Alarm categories set per excursion level on the point form:<br><strong>State Alarm HL</strong>: High / Low limits.<br><strong>State Alarm HHLL</strong>: High-High / Low-Low critical safety limits.<br><strong>State Alarm OU</strong>: Overrange / Underrange sensor clipping.</p>
+          <p><span class="tag">Routing</span> Each category can have its own Area of Interest, for example HL to field operators and HHLL to plant emergency managers.</p>
+        </article>
+
+        <h2 id="g-vector">Vector Graphics &amp; Illustration Tools</h2>
+        <article class="term" id="term-vector" data-search-item data-title="Vector Drawing Tools (Line, Polygon, Pipe, Rectangle, Ellipse)" data-section="Glossary · Graphics Tools">
+          <h3>Vector Drawing Tools (Line, Polygon, Pipe, Rectangle, Ellipse)</h3>
+          <p>Native geometric objects on the <em>Graphics</em> ribbon tab for flow lines, tanks, vessels, and manifolds in ISA-101 displays.</p>
+          <p><strong>Pipe</strong>: a multi-segment polyline with configurable walls, centerline style, and flow-direction arrows.</p>
+        </article>
+        <article class="term" id="term-illus" data-search-item data-title="Illustration Formats (CAD, Metafile, SVG)" data-section="Glossary · Graphics Tools">
+          <h3>Illustration Formats (CAD, Metafile, SVG)</h3>
+          <p><strong>SVG</strong>: stays crisp at any zoom; suited to modern equipment symbols (valves, pumps, blowers).<br><strong>CAD / Metafile</strong> (<code>.dxf</code>, <code>.wmf</code>): bring in P&amp;ID drawings or manufacturer outlines as mimic backgrounds.</p>
+          <p><span class="tag">Check</span> Test imported drawings in Virtual ViewX; not every format renders identically in a browser.</p>
+        </article>
+        <article class="term" id="term-layout" data-search-item data-title="Layout Utilities (Align, Distribute, Simplify Polylines, Ruler, Navigator)" data-section="Glossary · Graphics Tools">
+          <h3>Layout Utilities (Align, Distribute, Simplify Polylines, Ruler, Navigator)</h3>
+          <p>Precision drafting controls. <strong>Simplify Polylines</strong> merges redundant vertices in traced pipe networks to cut redraw time and memory use. <strong>Navigator</strong> is a bird's-eye overview window for panning and zooming large plant schematics.</p>
+        </article>
+
+        <h2 id="g-sysobj">Core Database Object Types (Create New → Other)</h2>
+        <article class="term" id="term-histcalc" data-search-item data-title="Historic Calculation" data-section="Glossary · System Objects">
+          <h3>Historic Calculation</h3>
+          <p>A scheduled background object that computes summaries from historian data, such as hourly minimum, 24-hour mean, or total daily volume.</p>
+        </article>
+        <article class="term" id="term-schedule" data-search-item data-title="Schedule & Calendar" data-section="Glossary · System Objects">
+          <h3>Schedule &amp; Calendar</h3>
+          <p>Time-based automation items for triggers such as weekly pump changeovers or lighting, driven by calendar days, holidays, and shift rosters.</p>
+        </article>
+        <article class="term" id="term-syscmd" data-search-item data-title="System Command & Method Call" data-section="Glossary · System Objects">
+          <h3>System Command &amp; Method Call</h3>
+          <p>Action items that run server-side batch files, PowerShell scripts, or internal database methods when triggered by logic or alarm states.</p>
+          <p><span class="tag">Security</span> These execute on the server. Restrict who can create or edit them, keep scripts in a controlled folder, and log their use.</p>
+        </article>
+        <article class="term" id="term-export" data-search-item data-title="SQL Export & CFX Export" data-section="Glossary · System Objects">
+          <h3>SQL Export &amp; CFX Export</h3>
+          <p>Automated extraction of database tables and flow runs to an external SQL database (ODBC) or to CFX custody-transfer files for billing systems. Confirm file format with the receiving system.</p>
+        </article>
+        <article class="term" id="term-enthist" data-search-item data-title="Enterprise Historian Connectors (Wonderware Historian, eDNA)" data-section="Glossary · System Objects">
+          <h3>Enterprise Historian Connectors (Wonderware Historian, eDNA)</h3>
+          <p>Outbound replication that pushes high-volume compressed telemetry from Geo SCADA into corporate historians. Check licensing and network paths first.</p>
+        </article>
+        <article class="term" id="term-customcolor" data-search-item data-title="Custom Color" data-section="Glossary · System Objects">
+          <h3>Custom Color</h3>
+          <p>Central RGB palette objects reused across the database so themes stay consistent, for example one set of ISA-101 gray shades and alarm colors for all mimics. Change the palette once and every mimic updates.</p>
+        </article>
+
         <h2 id="g-logic">Logic &amp; Scripting</h2>
         <article class="term" id="term-st" data-search-item data-title="Structured Text (ST)" data-section="Glossary · Logic">
           <h3>Structured Text (ST)</h3>
@@ -970,8 +1035,19 @@ e.g. raw 5000 of 0-10000, eng 0-4.0  ->  2.0 m</code></pre>
           <li>Show a clear MAINTENANCE banner on the site mimic while active.</li>
           <li>Clear the flag at handover and confirm alarms return.</li>
         </ol>
+        <h2 id="t4-s4" data-search-item data-title="T4 · Hysteresis, tune limits and state alarms" data-section="Tutorial 4">Step 4 · Hysteresis, tune limits and state alarms</h2>
+        <ol class="steps">
+          <li>On each analog point set <strong>Hysteresis</strong> (for example <code>2</code> on a High limit of <code>75</code>) so a signal sitting on the threshold does not chatter.</li>
+          <li>Split alarms by category: <em>State Alarm HL</em> to field operators, <em>State Alarm HHLL</em> to emergency managers, <em>State Alarm OU</em> to maintenance. Give each its own <strong>Area of Interest</strong>.</li>
+          <li>Enable <strong>Tune Limits</strong> only where operators genuinely need to adjust setpoints, and set permissions accordingly. Tuned limits stay tuned after tuning is disabled, so log each change and restore design values at handover.</li>
+          <li>Test with an <strong>Internal Analog Point</strong> driven from a mimic before field telemetry exists.</li>
+        </ol>
+
         <h3>Verification</h3>
         <ul class="checklist" data-check="t4">
+          <li><label><input type="checkbox"> Alarm does not chatter when the value hovers on a limit</label></li>
+          <li><label><input type="checkbox"> Each state alarm routes to the correct Area of Interest</label></li>
+          <li><label><input type="checkbox"> Tuned limits reset to design values</label></li>
           <li><label><input type="checkbox"> Test alarm reaches e-mail/SMS</label></li>
           <li><label><input type="checkbox"> Unacknowledged alarm escalates on time</label></li>
           <li><label><input type="checkbox"> Maintenance flag cleared after commissioning</label></li>
@@ -1599,7 +1675,7 @@ return msg;</code></pre>
       </section>
 
       <footer class="footer">
-        <p>agac.ae · EcoStruxure Geo SCADA Field Engineering Guide · v1.7.0. Independent engineering reference; not an official Schneider Electric document. Verify against vendor documentation.</p>
+        <p>agac.ae · EcoStruxure Geo SCADA Field Engineering Guide · v1.8.0. Independent engineering reference; not an official Schneider Electric document. Verify against vendor documentation.</p>
       </footer>
     </main>
   </div>
