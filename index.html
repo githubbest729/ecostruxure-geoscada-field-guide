@@ -260,6 +260,49 @@
           <p>Time-ordered journal of state changes, operator actions, and system events. This is the audit trail; do not shorten retention below the contractual requirement.</p>
         </article>
 
+        <h2 id="g-ribbon">ViewX Ribbon Breakdown</h2>
+        <p class="muted">Tools from the ViewX ribbon tabs: Home, Edit, Graphics, View.</p>
+        <article class="term" id="term-rb-embtrend" data-search-item data-title="Embedded Trend" data-section="Glossary · ViewX Ribbon (Graphics)">
+          <h3>Embedded Trend</h3>
+          <p><span class="tag">Graphics tab</span> Direct insertion of real-time and historical time-series curves on a mimic canvas, with no separate window.</p>
+          <p><span class="tag">Example</span> Embedding a 4-hour wet-well level trend inside the station mimic.</p>
+        </article>
+        <article class="term" id="term-rb-emblist" data-search-item data-title="Embedded Alarm List" data-section="Glossary · ViewX Ribbon (Graphics)">
+          <h3>Embedded Alarm List</h3>
+          <p><span class="tag">Graphics tab</span> A filtered, localised alarm banner placed directly on a mimic.</p>
+          <p><span class="tag">Example</span> Show only active unacknowledged alarms where <code>Source = AGAC.DXB.WPS01.*</code>.</p>
+        </article>
+        <article class="term" id="term-rb-layers" data-search-item data-title="Layers" data-section="Glossary · ViewX Ribbon (Graphics)">
+          <h3>Layers</h3>
+          <p><span class="tag">Graphics tab</span> Zoom-dependent or role-dependent visibility planes within a mimic.</p>
+          <p><span class="tag">Example</span> Hide fine instrument tag names at 100% view, but show calibration tags when zoomed past 200%.</p>
+        </article>
+        <article class="term" id="term-rb-params" data-search-item data-title="Mimic Parameters" data-section="Glossary · ViewX Ribbon (Graphics)">
+          <h3>Mimic Parameters</h3>
+          <p><span class="tag">Graphics tab</span> Arguments passed to a generic mimic when it opens, so it links dynamically to the right tag data.</p>
+          <p><span class="tag">Example</span> Open one generic pump faceplate with <code>Station="WPS01"</code> to load that station's points.</p>
+        </article>
+        <article class="term" id="term-rb-script" data-search-item data-title="Edit Script (ViewX Logic)" data-section="Glossary · ViewX Ribbon (Graphics)">
+          <h3>Edit Script (ViewX Logic)</h3>
+          <p><span class="tag">Graphics tab</span> Client-side script workspace for custom dialog pop-ups, user confirmations, and dynamic object transformations. Language and availability depend on the release.</p>
+          <p><span class="tag">Example</span> An operator confirmation box shown before firing an SBO pump-stop control.</p>
+        </article>
+        <article class="term" id="term-rb-dyna" data-search-item data-title="Dynagraph / X-Y Plot" data-section="Glossary · ViewX Ribbon (Graphics)">
+          <h3>Dynagraph / X-Y Plot</h3>
+          <p><span class="tag">Graphics tab</span> Specialised vector graphing for pump curves, rod-pumping load, or pressure-versus-flow characterisation.</p>
+          <p><span class="tag">Example</span> Plot differential pressure against pump motor RPM over the manufacturer's performance curve.</p>
+        </article>
+        <article class="term" id="term-rb-dbbar" data-search-item data-title="Database Bar" data-section="Glossary · ViewX Ribbon (Home / View)">
+          <h3>Database Bar</h3>
+          <p><span class="tag">Home / View tab</span> The primary hierarchical navigation pane showing database objects, servers, and driver trees.</p>
+          <p><span class="tag">Example</span> Navigate <code>AGAC → DXB → WPS01</code> to inspect point configuration.</p>
+        </article>
+        <article class="term" id="term-rb-findrep" data-search-item data-title="Find & Replace DB References" data-section="Glossary · ViewX Ribbon (Edit)">
+          <h3>Find &amp; Replace DB References</h3>
+          <p><span class="tag">Edit tab</span> Bulk engineering utility that repoints animation tags across symbols and mimics.</p>
+          <p><span class="tag">Example</span> Duplicate a pump graphic and repoint <code>.Pump1.</code> animations to <code>.Pump2.</code> in seconds.</p>
+        </article>
+
         <h2 id="g-logic">Logic &amp; Scripting</h2>
         <article class="term" id="term-st" data-search-item data-title="Structured Text (ST)" data-section="Glossary · Logic">
           <h3>Structured Text (ST)</h3>
@@ -501,8 +544,31 @@ e.g. raw 5000 of 0-10000, eng 0-4.0  ->  2.0 m</code></pre>
           <li>Insert an alarm banner/list control at the top of every display, filtered to the user's area.</li>
           <li>Add a system health indicator bound to <code>CommsFail</code> and the server status so loss of data is obvious.</li>
         </ol>
+        <h2 id="t3-s4" data-search-item data-title="T3 · Build an ISA-101 mimic from the Graphics ribbon" data-section="Tutorial 3">Step 4 · Build an ISA-101 mimic from the Graphics ribbon</h2>
+        <ol class="steps">
+          <li><strong>Draw equipment.</strong> On the <em>Graphics</em> tab choose <strong>Drawing → Rectangle / Pipe / Ellipse</strong>. Draw vessels and headers in neutral gray (<code>RGB 180,180,180</code> to <code>200,200,200</code>).</li>
+          <li><strong>Bind animations.</strong> Select the pump symbol, click <strong>Properties</strong>, then <strong>Animations → Fill / Outline</strong> and bind to <code>.P1_Run_DI.CurrentState</code>:
+            <ul>
+              <li>State 0 (Stopped): dark gray outline, no fill.</li>
+              <li>State 1 (Running): white symbol, solid fill.</li>
+              <li>State 2 (Tripped / Fault): red badge plus the text "FAULT". Never rely on color alone.</li>
+            </ul>
+          </li>
+          <li><strong>Embed live data.</strong>
+            <ul>
+              <li><em>Graphics → List → Alarm List</em>: drop an alarm banner at the footer and set the filter query to <code>WHERE "Source" LIKE 'AGAC.DXB.WPS01%'</code>.</li>
+              <li><em>Graphics → Trend</em>: draw a window beside the wet well and drag <code>WetWell_Level_AI</code> from the Database Bar into it.</li>
+            </ul>
+          </li>
+          <li><strong>Context menus and pick actions.</strong> Select the pump motor, open the <strong>Pick Actions</strong> tab, and choose <strong>Object Menu (Context Menu)</strong> so operators can right-click to Start, Stop, or open Historic Trends.</li>
+          <li><strong>Reuse.</strong> For a second pump, duplicate the graphic and use <strong>Edit → Find &amp; Replace DB References</strong> to repoint <code>.Pump1.</code> to <code>.Pump2.</code>. For many similar stations, build one generic mimic with parameters (for example <code>Station="WPS01"</code>).</li>
+        </ol>
+        <p class="muted small">The 0/1/2 state mapping assumes a point with a third fault state. If your design uses separate Run and Fault points, bind each animation to its own point. Confirm the alarm-list filter syntax in your release.</p>
+
         <h3>Verification</h3>
         <ul class="checklist" data-check="t3">
+          <li><label><input type="checkbox"> Embedded alarm list shows only this station's alarms</label></li>
+          <li><label><input type="checkbox"> Duplicated graphic repointed with no leftover Pump1 references</label></li>
           <li><label><input type="checkbox"> Display readable on a 7-inch tablet</label></li>
           <li><label><input type="checkbox"> Alarm state is distinguishable without color</label></li>
           <li><label><input type="checkbox"> Pick actions respect operator permissions</label></li>
@@ -659,6 +725,7 @@ Events missing                   unsolicited disabled or event class unassigned<
             <ul>
               <li><em>Integrity Poll (Class 0,1,2,3)</em>: <code>15M</code> routine, <code>1H</code> for low-bandwidth cellular.</li>
               <li><em>Event Poll (Class 1,2,3)</em>: <code>5S</code> or <code>10S</code>.</li>
+              <li><em>Integrity on Comms Restart</em>: enabled, so a Class 0 pull is forced after link recovery.</li>
               <li><em>Unsolicited Messages</em>: enable for GPRS/cellular RTUs that report events without waiting for polls.</li>
             </ul>
           </li>
@@ -685,12 +752,35 @@ Events missing                   unsolicited disabled or event class unassigned<
           <li>Enter the <strong>Point Number</strong> (DNP3 index starts at <code>0</code>).</li>
           <li>Select the <strong>Event Class</strong>: Class 1 = critical alarms, Class 2 = high-priority operational events, Class 3 = periodic status and analogs.</li>
         </ul>
+        <h2 id="dnp3-s5" data-search-item data-title="DNP3 · Step 5 Point mapping walkthrough (binary, analog, controls)" data-section="DNP3 Guide">Step 5 · Point mapping walkthrough</h2>
+        <h3>Binary Input (DI)</h3>
+        <ol class="steps">
+          <li>Select <strong>Create New → DNP3 → Binary Input Point</strong> (for example <code>P1_Run_DI</code>).</li>
+          <li>Set <strong>Outstation</strong> to <code>RTU01_Outstation</code> and <strong>Point Number</strong> to <code>0</code>.</li>
+          <li>Use Group 1 Var 2 (with flags/time) so events carry the RTU timestamp. Set <strong>Event Class</strong> to <code>Class 1</code> for immediate event prioritisation (trip alarms).</li>
+        </ol>
+        <h3>Analog Input (AI)</h3>
+        <ol class="steps">
+          <li>Select <strong>Create New → DNP3 → Analog Input Point</strong> (for example <code>WetWell_Level_AI</code>).</li>
+          <li>Set <strong>Point Number</strong> <code>0</code> and <strong>Event Class</strong> <code>Class 2</code> or <code>Class 3</code> (Group 30 Var 1).</li>
+          <li>On the <strong>Analog</strong> tab set raw scaling (<code>Raw Min 0</code>, <code>Raw Max 32767</code> or <code>4095</code>, per the RTU) and engineering scaling (<code>0.0</code> to <code>5.0 m</code>).</li>
+        </ol>
+        <h3>Controls (CROB / Pulse DO)</h3>
+        <ol class="steps">
+          <li>Select <strong>Create New → DNP3 → Binary Output Point</strong> or <strong>Pulse (Trip-Close)</strong> (Group 12).</li>
+          <li>Set the control type to <strong>Select-Before-Operate (SBO)</strong> or <strong>Direct Operate</strong>. Use SBO for anything that can harm people or plant.</li>
+        </ol>
+        <p><span class="tag">Verify</span> Trigger a field input and confirm the event timestamp shows the field event time (SOE) rather than server arrival time.</p>
+        <p class="muted small">Raw range, variation, and class assignment must match the RTU configuration; get them from the RTU point list rather than assuming.</p>
+
         <h3>Verification</h3>
         <ul class="checklist" data-check="dnp3">
           <li><label><input type="checkbox"> Channel, set and outstation all In Service with no warning badge</label></li>
           <li><label><input type="checkbox"> Outstation status Healthy / Online</label></li>
           <li><label><input type="checkbox"> Point indices match the RTU point list (zero-based)</label></li>
           <li><label><input type="checkbox"> Event classes agree with the RTU class assignment</label></li>
+          <li><label><input type="checkbox"> Integrity on Comms Restart enabled and tested by pulling the link</label></li>
+          <li><label><input type="checkbox"> Event timestamps show RTU field time (SOE), not server arrival time</label></li>
           <li><label><input type="checkbox"> Control outputs tested only with plant isolated</label></li>
         </ul>
       </section>
@@ -777,7 +867,7 @@ END_PROGRAM</code></pre>
       </section>
 
       <footer class="footer">
-        <p>agac.ae · EcoStruxure Geo SCADA Field Engineering Guide · v1.1.0. Independent engineering reference; not an official Schneider Electric document. Verify against vendor documentation.</p>
+        <p>agac.ae · EcoStruxure Geo SCADA Field Engineering Guide · v1.2.0. Independent engineering reference; not an official Schneider Electric document. Verify against vendor documentation.</p>
       </footer>
     </main>
   </div>
