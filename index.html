@@ -52,6 +52,11 @@
         <li><a href="#t3" data-nav="t3">3 · Mimics &amp; HMI</a></li>
         <li><a href="#t4" data-nav="t4">4 · Alarms &amp; Redirection</a></li>
         <li><a href="#t5" data-nav="t5">5 · Commissioning</a></li>
+        <li class="nav-label">DNP3 &amp; Extended Procedures</li>
+        <li><a href="#dnp3" data-nav="dnp3">DNP3 Implementation</a></li>
+        <li><a href="#t6" data-nav="t6">6 · Logic Engine (ST)</a></li>
+        <li><a href="#t7" data-nav="t7">7 · Historic &amp; Archiving</a></li>
+        <li><a href="#t8" data-nav="t8">8 · Security &amp; Roles</a></li>
       </ul>
     </nav>
     <div class="scrim" id="scrim" hidden></div>
@@ -81,6 +86,10 @@
           <a class="card" href="#t3" data-nav="t3"><h2>3 · Mimics &amp; HMI</h2><p>Grayscale base, animations, pick actions, embedded trends.</p></a>
           <a class="card" href="#t4" data-nav="t4"><h2>4 · Alarms &amp; Redirection</h2><p>Priorities, escalation, suppression during commissioning.</p></a>
           <a class="card" href="#t5" data-nav="t5"><h2>5 · Commissioning</h2><p>Server Status, comms logging, end-to-end loop tests.</p></a>
+          <a class="card" href="#dnp3" data-nav="dnp3"><h2>DNP3 Implementation</h2><p>Channel → Outstation Set → Outstation → Points, with ViewX menu paths.</p></a>
+          <a class="card" href="#t6" data-nav="t6"><h2>6 · Logic Engine</h2><p>Structured Text lead/lag logic and execution modes.</p></a>
+          <a class="card" href="#t7" data-nav="t7"><h2>7 · Historic &amp; Archiving</h2><p>Significant change, lifetime, archive volumes.</p></a>
+          <a class="card" href="#t8" data-nav="t8"><h2>8 · Security &amp; Roles</h2><p>User groups, branch permissions, action confirmation.</p></a>
         </div>
         <h2>Quick reference</h2>
         <div class="table-wrap">
@@ -140,6 +149,8 @@
           <h3>Virtual ViewX</h3>
           <p>HTML5 web client that renders ViewX-authored mimics, lists, and trends in a browser with no client install. Suited to remote operators and tablets.</p>
           <p><span class="tag">Context</span> Not every ViewX feature is available. Test mimics in Virtual ViewX before declaring them web-ready.</p>
+        
+          <p><span class="tag">Example</span> Field technicians view pump station overview mimics and acknowledge alarms from an iPad over the corporate SCADA VPN.</p>
         </article>
         <article class="term" id="term-webx" data-search-item data-title="Original WebX" data-section="Glossary · Clients">
           <h3>Original WebX</h3>
@@ -166,6 +177,8 @@
         <article class="term" id="term-overrides" data-search-item data-title="Property Overrides" data-section="Glossary · Database">
           <h3>Property Overrides</h3>
           <p>Per-instance changes to properties that the template would otherwise control, such as IP address, outstation address, or an alarm limit at one site. Keep overrides to a minimum and document each one.</p>
+        
+          <p><span class="tag">Example</span> In <code>Template_PumpingStation</code> the high-level alarm delay is 10 s. In instance <code>WPS_01</code> only <code>Outstation.DirectHost</code> is overridden to <code>10.20.5.42</code>; the alarm settings stay tied to the template.</p>
         </article>
 
         <h2 id="g-drivers">Protocol Drivers &amp; Telemetry</h2>
@@ -193,6 +206,30 @@
           <p>Publish/subscribe messaging for lightweight devices and IoT gateways. Topics map to points. Always use TLS and per-device credentials, and decide a payload format (JSON, Sparkplug B) up front.</p>
         </article>
 
+        <h2 id="g-telemetry">Telemetry &amp; Industrial Protocol Terms</h2>
+        <article class="term" id="term-iin" data-search-item data-title="IIN Bits (Internal Indications)" data-section="Glossary · Telemetry">
+          <h3>IIN Bits (Internal Indications)</h3>
+          <p>A 2-byte bitfield returned by a DNP3 outstation in every response, reporting device state: restart, event buffer overflow, class data available, need time, configuration or parameter errors.</p>
+          <p><span class="tag">Context</span> First place to look when an outstation is online but behaving oddly.</p>
+          <p><span class="tag">Example</span> After an RTU power cycle it returns <code>IIN1.7 = 1</code> (Device Restart). The master must react (for example time-sync and clear the restart bit) before the flag drops.</p>
+        </article>
+        <article class="term" id="term-classes" data-search-item data-title="Class 0, 1, 2, 3 Data (with example)" data-section="Glossary · Telemetry">
+          <h3>Class 0, 1, 2, 3 Data</h3>
+          <p>Class 0 is the static current value of every mapped point. Classes 1, 2 and 3 are timestamped events recorded by the outstation when a point changes. Used to manage bandwidth over telemetry circuits.</p>
+          <p><span class="tag">Example</span> A flow transmitter fluctuates every 100 ms during a pump surge. The RTU buffers the timestamped changes locally as Class 3 events, and one event poll retrieves them, preserving the surge shape without high-frequency polling.</p>
+          <p><span class="tag">Point assignment</span> Class 1 = critical alarms, Class 2 = high-priority operational events, Class 3 = periodic status and analogs (agac.ae convention).</p>
+        </article>
+        <article class="term" id="term-sbo" data-search-item data-title="Select-Before-Operate (SBO)" data-section="Glossary · Telemetry">
+          <h3>Select-Before-Operate (SBO)</h3>
+          <p>A two-step command: the master sends <em>Select</em> to arm the output, the RTU echoes it, then the master sends <em>Operate</em> inside a short timeout window. Prevents noise or a stray frame from issuing a command.</p>
+          <p><span class="tag">Example</span> Opening a 33 kV motorised breaker uses an SBO digital output on DNP3 Group 12. If the echo does not match within the timeout (for example 3 s), the operation is aborted and the operator is alerted.</p>
+        </article>
+        <article class="term" id="term-wits" data-search-item data-title="WITS (Water Industry Telemetry Standards)" data-section="Glossary · Telemetry">
+          <h3>WITS (Water Industry Telemetry Standards)</h3>
+          <p>A DNP3-based profile for water and wastewater telemetry with standardised point configuration, file transfer, and local logging. Geo SCADA offers WITS outstation types within its DNP3 driver.</p>
+          <p><span class="tag">Example</span> A remote sewer level monitor using a WITS outstation object for burst telemetry and configuration synchronisation from ViewX. Confirm feature support for your RTU model.</p>
+        </article>
+
         <h2 id="g-hist">Data Historization &amp; Alarms</h2>
         <article class="term" id="term-history" data-search-item data-title="Historical Logging" data-section="Glossary · History &amp; Alarms">
           <h3>Historical Logging</h3>
@@ -205,6 +242,8 @@
         <article class="term" id="term-compression" data-search-item data-title="Compression Algorithms" data-section="Glossary · History &amp; Alarms">
           <h3>Compression Algorithms</h3>
           <p>Reduce stored data by dropping samples that lie within a tolerance of a line between kept samples. Set tolerance from instrument accuracy, not by habit; too wide hides real process movement.</p>
+        
+          <p><span class="tag">Example</span> A 0.2 bar deadband on a 0–16 bar pressure transducer ignores pumping vibration between 5.01 and 5.15 bar, but a sudden drop to 4.7 bar writes a historic record immediately.</p>
         </article>
         <article class="term" id="term-priorities" data-search-item data-title="Alarm Priorities" data-section="Glossary · History &amp; Alarms">
           <h3>Alarm Priorities</h3>
@@ -213,6 +252,8 @@
         <article class="term" id="term-redirect" data-search-item data-title="Alarm Redirection" data-section="Glossary · History &amp; Alarms">
           <h3>Alarm Redirection</h3>
           <p>Routes alarms to alternative destinations (e-mail, SMS, pager, other operator groups) based on area, time, or unacknowledged duration.</p>
+        
+          <p><span class="tag">Example</span> A Critical wet-well overflow alarm (<code>AGAC.DXB.WPS01.HighHigh_ALM</code>) left unacknowledged for 300 s triggers an SMS action carrying the alert and station ID to the on-call engineer.</p>
         </article>
         <article class="term" id="term-events" data-search-item data-title="Event Logging" data-section="Glossary · History &amp; Alarms">
           <h3>Event Logging</h3>
@@ -562,8 +603,181 @@ Events missing                   unsolicited disabled or event class unassigned<
         </ul>
       </section>
 
+      <!-- DNP3 -->
+      <section class="view" data-view="dnp3" id="dnp3" hidden>
+        <h1>DNP3 Implementation Guide</h1>
+        <p class="lead">Geo SCADA DNP3 uses a four-tier hierarchy: <strong>Channel → Outstation Set → Outstation → Points</strong>.</p>
+        <div class="callout warn" role="note"><strong>Verify menus.</strong> Menu paths below follow the agac.ae ViewX screenshots. Entries differ between releases, so confirm against your installed version.</div>
+        <div class="callout safety" role="note"><strong>Safety.</strong> Leave the outstation and any control points out of service until addressing is confirmed. Do not test output points on live plant without a permit.</div>
+
+        <h2 id="dnp3-tree" data-search-item data-title="DNP3 · Object tree layout" data-section="DNP3 Guide">Object tree</h2>
+<pre class="code" data-lang="text"><code>AGAC (System Group)
+ └── DXB
+      └── WPS01
+           ├── DNP3_Direct_Channel        [DNP3 -&gt; Direct Channel]
+           ├── DNP3_Direct_OutstationSet  [DNP3 -&gt; Direct Outstation Set]
+           ├── RTU01_Outstation           [DNP3 -&gt; Generic/SCADAPack -&gt; Direct Outstation]
+           ├── P1_Run_DI                  [DNP3 -&gt; Binary Input Point]
+           ├── WetWell_Level_AI           [DNP3 -&gt; Analog Input Point]
+           └── P1_StartStop_DO            [DNP3 -&gt; Binary Output Point / Pulse]</code></pre>
+
+        <h2 id="dnp3-s1" data-search-item data-title="DNP3 · Step 1 Create Direct Channel" data-section="DNP3 Guide">Step 1 · Create the DNP3 Direct Channel</h2>
+        <ol class="steps">
+          <li>In ViewX right-click the station group (for example <code>AGAC.DXB.WPS01</code>).</li>
+          <li>Select <strong>Create New → DNP3 → Direct Channel</strong>.</li>
+          <li>Open the channel configuration:
+            <ul>
+              <li><strong>Connection Type</strong>: Network (TCP/IP) or Serial.</li>
+              <li><strong>TCP/IP</strong>: <em>Direct</em> (Geo SCADA initiates) or <em>Listening</em> (RTU initiates).</li>
+              <li><strong>Port</strong>: default <code>20000</code>.</li>
+              <li><strong>Timeouts</strong>: Connect Timeout <code>5 s</code>, Retry Delay <code>30 s</code>.</li>
+            </ul>
+          </li>
+          <li>Tick <strong>In Service</strong> and save.</li>
+        </ol>
+        <p><span class="tag">Verify</span> The channel icon in the Database Bar shows no red cross or warning badge.</p>
+
+        <h2 id="dnp3-s2" data-search-item data-title="DNP3 · Step 2 Create Outstation Set" data-section="DNP3 Guide">Step 2 · Create the Outstation Set</h2>
+        <ol class="steps">
+          <li>Right-click the group → <strong>Create New → DNP3 → Direct Outstation Set</strong>.</li>
+          <li>On the <em>Outstation Set</em> tab choose the <strong>Channel</strong> from Step 1; Protocol: DNP3.</li>
+          <li>Save and set <strong>In Service</strong>.</li>
+        </ol>
+
+        <h2 id="dnp3-s3" data-search-item data-title="DNP3 · Step 3 Create Outstation (RTU node)" data-section="DNP3 Guide">Step 3 · Create the Outstation (RTU node)</h2>
+        <ol class="steps">
+          <li>Right-click the group → <strong>Create New → DNP3 → Generic → Direct Outstation</strong> (or <strong>SCADAPack E</strong> / <strong>WITS</strong> for dedicated hardware).</li>
+          <li><strong>Outstation tab</strong>:
+            <ul>
+              <li><em>Outstation Set</em>: the set from Step 2.</li>
+              <li><em>Address</em>: RTU link-layer address (e.g. <code>11</code>).</li>
+              <li><em>Local Address (Master)</em>: <code>1</code> (agac.ae standard).</li>
+              <li><em>Direct Host</em>: RTU IP (e.g. <code>192.168.1.50</code>) and TCP port <code>20000</code>.</li>
+            </ul>
+          </li>
+          <li><strong>Scan Parameters tab</strong>:
+            <ul>
+              <li><em>Integrity Poll (Class 0,1,2,3)</em>: <code>15M</code> routine, <code>1H</code> for low-bandwidth cellular.</li>
+              <li><em>Event Poll (Class 1,2,3)</em>: <code>5S</code> or <code>10S</code>.</li>
+              <li><em>Unsolicited Messages</em>: enable for GPRS/cellular RTUs that report events without waiting for polls.</li>
+            </ul>
+          </li>
+          <li>Save and set <strong>In Service</strong>.</li>
+        </ol>
+        <p><span class="tag">Verify</span> Right-click the outstation → <strong>Retrieve Diagnostics</strong>, or read the comms status: it should show Healthy / Online. Check the IIN bits if it does not.</p>
+
+        <h2 id="dnp3-s4" data-search-item data-title="DNP3 · Step 4 Points and mapping" data-section="DNP3 Guide">Step 4 · Add and map DNP3 points</h2>
+        <p>Right-click → <strong>Create New → DNP3 → …</strong></p>
+        <div class="table-wrap"><table>
+          <caption class="visually-hidden">DNP3 point types</caption>
+          <thead><tr><th scope="col">Point type</th><th scope="col">Menu selection</th><th scope="col">Object group / variation</th><th scope="col">Typical use</th></tr></thead>
+          <tbody>
+            <tr><td>Binary Input</td><td>DNP3 → Binary Input Point</td><td>Group 1 (Var 1/2)</td><td>Pump run/stop, trip, door open</td></tr>
+            <tr><td>Binary Output</td><td>DNP3 → Binary Output Point or Pulse (Trip-Close)</td><td>Group 12 (CROB)</td><td>Start/stop, breaker trip/close</td></tr>
+            <tr><td>Analog Input</td><td>DNP3 → Analog Input Point</td><td>Group 30 (Var 1/2/4)</td><td>Level, pressure, flow</td></tr>
+            <tr><td>Analog Output</td><td>DNP3 → Analog Output Point</td><td>Group 41</td><td>VSD speed setpoint (Hz)</td></tr>
+            <tr><td>Counter</td><td>DNP3 → Counter Point</td><td>Group 20 / 21</td><td>Volume totaliser (m³)</td></tr>
+          </tbody>
+        </table></div>
+        <p>On each point's <strong>DNP3</strong> tab:</p>
+        <ul>
+          <li>Link the <strong>Outstation</strong> from Step 3.</li>
+          <li>Enter the <strong>Point Number</strong> (DNP3 index starts at <code>0</code>).</li>
+          <li>Select the <strong>Event Class</strong>: Class 1 = critical alarms, Class 2 = high-priority operational events, Class 3 = periodic status and analogs.</li>
+        </ul>
+        <h3>Verification</h3>
+        <ul class="checklist" data-check="dnp3">
+          <li><label><input type="checkbox"> Channel, set and outstation all In Service with no warning badge</label></li>
+          <li><label><input type="checkbox"> Outstation status Healthy / Online</label></li>
+          <li><label><input type="checkbox"> Point indices match the RTU point list (zero-based)</label></li>
+          <li><label><input type="checkbox"> Event classes agree with the RTU class assignment</label></li>
+          <li><label><input type="checkbox"> Control outputs tested only with plant isolated</label></li>
+        </ul>
+      </section>
+
+      <!-- TUTORIAL 6 -->
+      <section class="view" data-view="t6" id="t6" hidden>
+        <h1>Procedure 6 · Logic Engine (Structured Text &amp; SFC)</h1>
+        <p class="lead">Automated calculations, pump interlocks, and scheduled routines using IEC 61131-3 logic inside Geo SCADA.</p>
+        <div class="callout safety" role="note"><strong>Safety.</strong> Develop and test logic that writes to outputs on the simulation database first. Server logic must never be the only protection for plant; hardwired and RTU-level interlocks remain primary.</div>
+        <h2 id="t6-s1" data-search-item data-title="P6 · Create ST program and map points" data-section="Procedure 6">Steps</h2>
+        <ol class="steps">
+          <li>Under the site group choose <strong>Create New → Logic → ST Program</strong> (Structured Text).</li>
+          <li>Map database points into the program variables:
+<pre class="code" data-lang="st"><code>PROGRAM WetWell_LeadLag
+VAR
+    Level      AT %M(.WetWell_Level_AI.CurrentValue) : REAL;
+    Pump1_Run  AT %M(.P1_Run_DI.CurrentValue)        : BOOL;
+    Pump1_Start AT %M(.P1_StartStop_DO.Value)        : BOOL;
+END_VAR
+
+IF Level &gt;= 3.8 AND NOT Pump1_Run THEN
+    Pump1_Start := TRUE;
+ELSIF Level &lt;= 1.2 AND Pump1_Run THEN
+    Pump1_Start := FALSE;
+END_IF;
+END_PROGRAM</code></pre>
+          </li>
+          <li>Compile and confirm <code>Compile Status: OK</code>.</li>
+          <li>Set <strong>Execution Mode</strong> to <em>On Point Change</em> or <em>Periodic (10 s)</em>.</li>
+        </ol>
+        <p class="muted small">The variable-binding syntax shown follows the agac.ae example; check the Geo SCADA logic help for the exact address syntax in your release. Add hysteresis between start and stop levels, as above, to prevent pump cycling.</p>
+        <h3>Verification</h3>
+        <ul class="checklist" data-check="t6">
+          <li><label><input type="checkbox"> Compiles without warnings</label></li>
+          <li><label><input type="checkbox"> Start and stop levels exercised in simulation</label></li>
+          <li><label><input type="checkbox"> Behavior correct when the pump or outstation is faulted or offline</label></li>
+        </ul>
+      </section>
+
+      <!-- TUTORIAL 7 -->
+      <section class="view" data-view="t7" id="t7" hidden>
+        <h1>Procedure 7 · Historical Configuration, Archiving &amp; Maintenance</h1>
+        <p class="lead">Prevent database bloat and keep trends fast.</p>
+        <h2 id="t7-s1" data-search-item data-title="P7 · Historic data, significant change, lifetime" data-section="Procedure 7">Steps</h2>
+        <ol class="steps">
+          <li>Open the analog point and go to the <strong>Historic</strong> tab.</li>
+          <li>Enable <strong>Historic Data</strong>.</li>
+          <li>Configure compression: <em>Significant Change</em> (e.g. <code>0.05 m</code> for a level sensor); smaller changes are not recorded. Set <em>Historic Lifetime</em> (e.g. <code>2 Years</code>).</li>
+          <li>In the <strong>Server Configuration Tool</strong>, check the <em>Historic → Archive Volume</em> path and retention schedule so the partition cannot fill and stall the server.</li>
+        </ol>
+        <div class="callout" role="note">Choose significant change from instrument accuracy and process dynamics. Confirm retention against contract and audit requirements before setting a lifetime.</div>
+        <h3>Verification</h3>
+        <ul class="checklist" data-check="t7">
+          <li><label><input type="checkbox"> Trend shows plausible detail after a known process change</label></li>
+          <li><label><input type="checkbox"> Archive volume has free-space monitoring</label></li>
+          <li><label><input type="checkbox"> Lifetime matches the retention policy</label></li>
+        </ul>
+      </section>
+
+      <!-- TUTORIAL 8 -->
+      <section class="view" data-view="t8" id="t8" hidden>
+        <h1>Procedure 8 · User Security, Roles &amp; Permissions</h1>
+        <p class="lead">Secure ViewX and Virtual ViewX following industrial cybersecurity practice.</p>
+        <div class="callout safety" role="note"><strong>Safety.</strong> Keep a second administrator session open while changing permissions so you cannot lock yourself out. Never share accounts.</div>
+        <h2 id="t8-s1" data-search-item data-title="P8 · User groups, permissions, action confirmation" data-section="Procedure 8">Steps</h2>
+        <ol class="steps">
+          <li>In the <code>System</code> folder create user groups: <code>Engineers</code>, <code>Shift_Operators</code>, <code>Read_Only_Viewers</code>.</li>
+          <li>Set explicit permissions on each database branch:
+            <ul>
+              <li><strong>Operators</strong>: View, Confirm Alarms, Control Points.</li>
+              <li><strong>Engineers</strong>: Configure, Delete, Force Points, Edit Logic.</li>
+              <li><strong>Read-only viewers</strong>: View only.</li>
+            </ul>
+          </li>
+          <li>Enable <strong>Action Confirmation</strong>: require password re-entry or two-step verification for high-risk remote controls such as opening a high-voltage feeder.</li>
+        </ol>
+        <h3>Verification</h3>
+        <ul class="checklist" data-check="t8">
+          <li><label><input type="checkbox"> Each role tested with a real test account</label></li>
+          <li><label><input type="checkbox"> Operators cannot configure or force points</label></li>
+          <li><label><input type="checkbox"> High-risk controls prompt for confirmation</label></li>
+          <li><label><input type="checkbox"> Default and shared accounts disabled</label></li>
+        </ul>
+      </section>
+
       <footer class="footer">
-        <p>agac.ae · EcoStruxure Geo SCADA Field Engineering Guide · v1.0.0. Independent engineering reference; not an official Schneider Electric document. Verify against vendor documentation.</p>
+        <p>agac.ae · EcoStruxure Geo SCADA Field Engineering Guide · v1.1.0. Independent engineering reference; not an official Schneider Electric document. Verify against vendor documentation.</p>
       </footer>
     </main>
   </div>

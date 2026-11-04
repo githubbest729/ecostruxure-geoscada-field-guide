@@ -16,7 +16,7 @@ All paths are relative, so it works both from a repo sub-path and a custom domai
 
 | File | Purpose |
 |------|---------|
-| `index.html` | App shell, glossary, 5 tutorials, mimic preview |
+| `index.html` | App shell, glossary, 5 tutorials, DNP3 guide, procedures 6-8, mimic preview |
 | `styles.css` | Dark/light themes, responsive layout, safe-area insets, print styles |
 | `app.js` | Routing, search, theme, install prompt, online status, mimic demo |
 | `sw.js` | Precache + stale-while-revalidate, offline fallback |
