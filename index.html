@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>EcoStruxure Geo SCADA Field Engineering Guide · agac.ae</title>
+  <meta name="description" content="Offline-first field guide for EcoStruxure Geo SCADA Expert: glossary, architecture, and five step-by-step engineering workflows.">
+  <meta name="theme-color" content="#0f1720" id="meta-theme-color">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Geo SCADA Guide">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar" role="banner">
+    <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+    </button>
+    <a class="brand" href="#home" data-nav="home">
+      <span class="brand-mark" aria-hidden="true">GS</span>
+      <span class="brand-text"><strong>Geo SCADA Field Guide</strong><small>agac.ae engineering</small></span>
+    </a>
+    <form class="search" role="search" id="searchForm" autocomplete="off">
+      <label for="searchInput" class="visually-hidden">Search glossary and guides</label>
+      <svg viewBox="0 0 24 24" aria-hidden="true" class="search-icon"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" fill="none"/><path d="M20 20l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="searchInput" type="search" placeholder="Search terms, ports, steps…" aria-controls="searchResults" enterkeyhint="search">
+    </form>
+    <span class="status-pill" id="netStatus" role="status" aria-live="polite"><span class="dot" aria-hidden="true"></span><span id="netStatusText">Online</span></span>
+    <button class="icon-btn" id="themeBtn" aria-label="Toggle light / dark theme" aria-pressed="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z" fill="currentColor"/></svg>
+    </button>
+    <button class="btn install-btn" id="installBtn" hidden>Install app</button>
+  </header>
+
+  <div class="shell">
+    <nav class="sidebar" id="sidebar" aria-label="Primary">
+      <ul>
+        <li><a href="#home" data-nav="home">Home</a></li>
+        <li class="nav-label">Reference</li>
+        <li><a href="#glossary" data-nav="glossary">Glossary &amp; Architecture</a></li>
+        <li><a href="#lab" data-nav="lab">Mimic / Point Preview</a></li>
+        <li class="nav-label">Field Procedures</li>
+        <li><a href="#t1" data-nav="t1">1 · Hierarchy &amp; Templates</a></li>
+        <li><a href="#t2" data-nav="t2">2 · Drivers &amp; Telemetry</a></li>
+        <li><a href="#t3" data-nav="t3">3 · Mimics &amp; HMI</a></li>
+        <li><a href="#t4" data-nav="t4">4 · Alarms &amp; Redirection</a></li>
+        <li><a href="#t5" data-nav="t5">5 · Commissioning</a></li>
+      </ul>
+    </nav>
+    <div class="scrim" id="scrim" hidden></div>
+
+    <main id="main" tabindex="-1">
+      <div class="offline-banner" id="offlineBanner" hidden role="status">You are offline. All guides remain available from the device cache.</div>
+
+      <!-- SEARCH RESULTS -->
+      <section id="searchResults" class="view" data-view="search" hidden aria-live="polite">
+        <h1>Search results</h1>
+        <p class="muted" id="searchSummary"></p>
+        <ul class="result-list" id="resultList"></ul>
+      </section>
+
+      <!-- HOME -->
+      <section class="view" data-view="home" id="home">
+        <h1>EcoStruxure Geo SCADA Field Engineering Guide</h1>
+        <p class="lead">Offline-first reference and execution guides for Geo SCADA Expert (formerly ClearSCADA), organised around agac.ae operational workflows.</p>
+        <div class="callout warn" role="note">
+          <strong>Read first.</strong> Menu names, object class names, and default ports vary between Geo SCADA Expert releases. Treat the values here as agac.ae working standards and verify against the Geo SCADA online help for your installed version before applying to a live system. Never perform controls, forced values, or configuration changes on a live plant without an approved work permit.
+        </div>
+        <div class="card-grid">
+          <a class="card" href="#glossary" data-nav="glossary"><h2>Glossary &amp; Architecture</h2><p>Redundancy, clients, database model, drivers, history, alarms, logic.</p></a>
+          <a class="card" href="#lab" data-nav="lab"><h2>Mimic / Point Preview</h2><p>Interactive ISA-101 pump station demo with point states and pick actions.</p></a>
+          <a class="card" href="#t1" data-nav="t1"><h2>1 · Hierarchy &amp; Templates</h2><p>Root group, tagging, group templates, instances, overrides.</p></a>
+          <a class="card" href="#t2" data-nav="t2"><h2>2 · Drivers &amp; Telemetry</h2><p>Channels, outstations, AI/DI/AO/DO, scaling, deadbands.</p></a>
+          <a class="card" href="#t3" data-nav="t3"><h2>3 · Mimics &amp; HMI</h2><p>Grayscale base, animations, pick actions, embedded trends.</p></a>
+          <a class="card" href="#t4" data-nav="t4"><h2>4 · Alarms &amp; Redirection</h2><p>Priorities, escalation, suppression during commissioning.</p></a>
+          <a class="card" href="#t5" data-nav="t5"><h2>5 · Commissioning</h2><p>Server Status, comms logging, end-to-end loop tests.</p></a>
+        </div>
+        <h2>Quick reference</h2>
+        <div class="table-wrap">
+          <table>
+            <caption class="visually-hidden">Quick reference values</caption>
+            <thead><tr><th scope="col">Item</th><th scope="col">Typical value</th><th scope="col">Note</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Geo SCADA DB server</th><td><code>5481/TCP</code></td><td>ViewX, Virtual ViewX server, and tool connections. Confirm in Server Configuration Tool.</td></tr>
+              <tr><th scope="row">DNP3 TCP</th><td><code>20000/TCP</code></td><td>Standard DNP3 port; many RTUs allow changing it.</td></tr>
+              <tr><th scope="row">Modbus TCP</th><td><code>502/TCP</code></td><td>Unit ID selects the slave behind a gateway.</td></tr>
+              <tr><th scope="row">OPC UA</th><td><code>4840/TCP</code></td><td>Default for many servers; vendor dependent.</td></tr>
+              <tr><th scope="row">MQTT</th><td><code>1883</code> / <code>8883 TLS</code></td><td>Use TLS for anything crossing a network boundary.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- GLOSSARY -->
+      <section class="view" data-view="glossary" id="glossary" hidden>
+        <h1>Glossary &amp; Architecture Concepts</h1>
+        <p class="lead">Definitions, operational context, and where each concept lives in the Geo SCADA database.</p>
+
+        <h2 id="g-server">Server Architecture</h2>
+        <article class="term" id="term-main-standby" data-search-item data-title="Main / Standby Redundancy" data-section="Glossary · Server">
+          <h3>Main / Standby Redundancy</h3>
+          <p>Two servers hold a synchronised copy of the database. The Main server runs drivers, history, and alarms; the Standby continuously receives updates and takes over automatically if the Main fails or is manually switched.</p>
+          <p><span class="tag">Context</span> Standard for critical water and power SCADA. Clients reconnect to whichever server is Main.</p>
+          <p><span class="tag">Mapping</span> Configured in the Server Configuration Tool and the <em>Server</em> / <em>Redundancy</em> settings of the database; visible under Server Status.</p>
+        </article>
+        <article class="term" id="term-triple" data-search-item data-title="Triple Standby" data-section="Glossary · Server">
+          <h3>Triple Standby</h3>
+          <p>Adds a third server to the redundancy set so that one failure still leaves a redundant pair. Commonly one server is placed at a remote disaster-recovery site.</p>
+          <p><span class="tag">Context</span> Plan bandwidth and latency for the synchronisation link to the third node.</p>
+        </article>
+        <article class="term" id="term-permanent" data-search-item data-title="Permanent Standby" data-section="Glossary · Server">
+          <h3>Permanent Standby</h3>
+          <p>A standby server that is never promoted to Main automatically. It holds a replicated database (for example at a head office or DR site) and is promoted only by deliberate operator action.</p>
+          <p><span class="tag">Context</span> Useful for read-only reporting, backup, and controlled DR failover.</p>
+        </article>
+        <article class="term" id="term-listeners" data-search-item data-title="Listeners" data-section="Glossary · Server">
+          <h3>Listeners</h3>
+          <p>Network endpoints on the server that accept inbound connections: client connections, and, for drivers such as DNP3, inbound connections from outstations that initiate (dial-in / unsolicited over TCP).</p>
+          <p><span class="tag">Context</span> A DNP3 TCP <em>listening</em> channel waits for the RTU to connect; a <em>direct</em> channel makes the connection outbound. Open the matching firewall rule.</p>
+        </article>
+        <article class="term" id="term-ports" data-search-item data-title="Geo SCADA DB Server Ports (5481 TCP)" data-section="Glossary · Server">
+          <h3>DB Server Ports (5481 TCP)</h3>
+          <p>The Geo SCADA database server accepts client and tool connections on TCP <code>5481</code> by default. Additional ports are used by the web and Virtual ViewX services and by redundancy links, depending on version and configuration.</p>
+          <p><span class="tag">Action</span> Allow 5481/TCP from engineering and operator networks only. Check Server Configuration Tool for the exact list in your release, and keep the firewall rule set under agac.ae change control.</p>
+        </article>
+
+        <h2 id="g-client">Client Interfaces</h2>
+        <article class="term" id="term-viewx" data-search-item data-title="ViewX" data-section="Glossary · Clients">
+          <h3>ViewX</h3>
+          <p>The Windows rich client used for both engineering (configuration, mimic design, queries) and operations (alarms, trends, controls). Access is governed by security roles and permissions.</p>
+        </article>
+        <article class="term" id="term-vvx" data-search-item data-title="Virtual ViewX" data-section="Glossary · Clients">
+          <h3>Virtual ViewX</h3>
+          <p>HTML5 web client that renders ViewX-authored mimics, lists, and trends in a browser with no client install. Suited to remote operators and tablets.</p>
+          <p><span class="tag">Context</span> Not every ViewX feature is available. Test mimics in Virtual ViewX before declaring them web-ready.</p>
+        </article>
+        <article class="term" id="term-webx" data-search-item data-title="Original WebX" data-section="Glossary · Clients">
+          <h3>Original WebX</h3>
+          <p>The earlier browser client that predates Virtual ViewX. Retained for legacy sites; new work should target Virtual ViewX.</p>
+        </article>
+
+        <h2 id="g-db">Database Model</h2>
+        <article class="term" id="term-hierarchy" data-search-item data-title="Hierarchical Database Structure" data-section="Glossary · Database">
+          <h3>Hierarchical Database Structure</h3>
+          <p>Every object lives in a tree rooted at the Root Group. Objects are addressed by their full name, for example <code>AGAC.DXB.WPS01.Pump1.Run</code>. Security, alarm handling, and history inherit down the tree.</p>
+        </article>
+        <article class="term" id="term-groups" data-search-item data-title="Groups" data-section="Glossary · Database">
+          <h3>Groups</h3>
+          <p>Container objects that organise the tree (region, site, plant area). Groups can carry security permissions and are the natural boundary for alarm areas and mimic navigation.</p>
+        </article>
+        <article class="term" id="term-templates" data-search-item data-title="Group Templates" data-section="Glossary · Database">
+          <h3>Group Templates</h3>
+          <p>A reusable blueprint of a group: points, outstations, logic, and mimics, with substitutable template parameters. Editing the template updates all instances.</p>
+        </article>
+        <article class="term" id="term-instances" data-search-item data-title="Group Instances" data-section="Glossary · Database">
+          <h3>Group Instances</h3>
+          <p>A concrete group created from a template. Instances inherit all template content and supply values for the template parameters.</p>
+        </article>
+        <article class="term" id="term-overrides" data-search-item data-title="Property Overrides" data-section="Glossary · Database">
+          <h3>Property Overrides</h3>
+          <p>Per-instance changes to properties that the template would otherwise control, such as IP address, outstation address, or an alarm limit at one site. Keep overrides to a minimum and document each one.</p>
+        </article>
+
+        <h2 id="g-drivers">Protocol Drivers &amp; Telemetry</h2>
+        <article class="term" id="term-dnp3" data-search-item data-title="DNP3" data-section="Glossary · Drivers">
+          <h3>DNP3</h3>
+          <p>Outstation-based telemetry protocol with timestamped events. Object structure: Channel → Outstation → Points (analog in, binary in, counters, analog out, binary out).</p>
+          <ul>
+            <li><strong>Class 0</strong>: static snapshot of all current values (integrity poll).</li>
+            <li><strong>Class 1 / 2 / 3</strong>: event buffers, assigned per point by priority/type.</li>
+            <li><strong>Unsolicited</strong>: outstation reports events without being polled; must be enabled on both RTU and the driver.</li>
+          </ul>
+          <p><span class="tag">Practice</span> Typical: integrity poll every 15–60 min, event poll 5–30 s, unsolicited enabled for Class 1.</p>
+        </article>
+        <article class="term" id="term-modbus" data-search-item data-title="Modbus RTU / TCP and Register Mapping" data-section="Glossary · Drivers">
+          <h3>Modbus (RTU, TCP, Register Mapping)</h3>
+          <p>Master/slave register protocol. RTU is serial; TCP wraps the frame in TCP with a unit ID. Data is read from register tables: coils, discrete inputs, input registers, holding registers.</p>
+          <p><span class="tag">Gotcha</span> Many documents use 1-based addresses (40001) while the wire uses 0-based offsets. Confirm the convention for the vendor map and the driver. Check word and byte order for 32-bit floats.</p>
+        </article>
+        <article class="term" id="term-opc" data-search-item data-title="OPC DA / UA" data-section="Glossary · Drivers">
+          <h3>OPC DA / UA</h3>
+          <p>Client interfaces to third-party servers. DA is COM/DCOM based and Windows only; UA is cross-platform with built-in security and certificates. Prefer UA for new work.</p>
+        </article>
+        <article class="term" id="term-mqtt" data-search-item data-title="MQTT / IoT Integration" data-section="Glossary · Drivers">
+          <h3>MQTT / IoT</h3>
+          <p>Publish/subscribe messaging for lightweight devices and IoT gateways. Topics map to points. Always use TLS and per-device credentials, and decide a payload format (JSON, Sparkplug B) up front.</p>
+        </article>
+
+        <h2 id="g-hist">Data Historization &amp; Alarms</h2>
+        <article class="term" id="term-history" data-search-item data-title="Historical Logging" data-section="Glossary · History &amp; Alarms">
+          <h3>Historical Logging</h3>
+          <p>Point values and events are stored in the historian. Define a historic data configuration (logging interval, on-change, or both) and a retention plan sized to disk.</p>
+        </article>
+        <article class="term" id="term-trends" data-search-item data-title="Trend Objects" data-section="Glossary · History &amp; Alarms">
+          <h3>Trend Objects</h3>
+          <p>Saved trend definitions (pens, scales, time ranges) that can be opened from a mimic pick action or embedded as a live trend in a display.</p>
+        </article>
+        <article class="term" id="term-compression" data-search-item data-title="Compression Algorithms" data-section="Glossary · History &amp; Alarms">
+          <h3>Compression Algorithms</h3>
+          <p>Reduce stored data by dropping samples that lie within a tolerance of a line between kept samples. Set tolerance from instrument accuracy, not by habit; too wide hides real process movement.</p>
+        </article>
+        <article class="term" id="term-priorities" data-search-item data-title="Alarm Priorities" data-section="Glossary · History &amp; Alarms">
+          <h3>Alarm Priorities</h3>
+          <p>Numeric severity attached to alarm conditions and used to sort, colour, and filter. agac.ae maps categories Critical / High / Medium / Low onto agreed numeric ranges (see Tutorial 4).</p>
+        </article>
+        <article class="term" id="term-redirect" data-search-item data-title="Alarm Redirection" data-section="Glossary · History &amp; Alarms">
+          <h3>Alarm Redirection</h3>
+          <p>Routes alarms to alternative destinations (e-mail, SMS, pager, other operator groups) based on area, time, or unacknowledged duration.</p>
+        </article>
+        <article class="term" id="term-events" data-search-item data-title="Event Logging" data-section="Glossary · History &amp; Alarms">
+          <h3>Event Logging</h3>
+          <p>Time-ordered journal of state changes, operator actions, and system events. This is the audit trail; do not shorten retention below the contractual requirement.</p>
+        </article>
+
+        <h2 id="g-logic">Logic &amp; Scripting</h2>
+        <article class="term" id="term-st" data-search-item data-title="Structured Text (ST)" data-section="Glossary · Logic">
+          <h3>Structured Text (ST)</h3>
+          <p>IEC 61131-3 text language used for server-side logic such as calculations, interlocks, and sequencing.</p>
+<pre class="code" data-lang="st"><code>IF Wet_Well_Level &gt; 3.5 AND NOT Duty_Pump_Fault THEN
+  Duty_Pump_Start := TRUE;
+ELSIF Wet_Well_Level &lt; 1.2 THEN
+  Duty_Pump_Start := FALSE;
+END_IF;</code></pre>
+        </article>
+        <article class="term" id="term-fbd" data-search-item data-title="Function Block Diagrams (FBD)" data-section="Glossary · Logic">
+          <h3>Function Block Diagrams (FBD)</h3>
+          <p>Graphical data-flow language: blocks (timers, comparators, PID) wired together. Good for readable control loops.</p>
+        </article>
+        <article class="term" id="term-sfc" data-search-item data-title="Sequential Function Charts (SFC)" data-section="Glossary · Logic">
+          <h3>Sequential Function Charts (SFC)</h3>
+          <p>Step and transition model for sequences such as pump start-up or filter backwash.</p>
+        </article>
+        <article class="term" id="term-vba" data-search-item data-title="ViewX Client VBA / Automation Scripting" data-section="Glossary · Logic">
+          <h3>ViewX Client Scripting &amp; Automation</h3>
+          <p>Client-side scripting on mimics and the automation interface let you drive displays and query the database from external programs. Availability and language depend on the release; check the Geo SCADA help for your version.</p>
+<pre class="code" data-lang="sql"><code>-- Illustrative SQL query (verify class names for your version)
+SELECT FullName, Id FROM CGroup ORDER BY FullName</code></pre>
+        </article>
+      </section>
+
+      <!-- LAB -->
+      <section class="view" data-view="lab" id="lab" hidden>
+        <h1>Mimic / Point Preview</h1>
+        <p class="lead">An ISA-101 style grayscale pump station. Color is used only for abnormal conditions. Click or tap the pump to open a pick-action menu.</p>
+        <div class="lab">
+          <div class="lab-stage">
+            <svg id="mimic" viewBox="0 0 480 260" role="img" aria-labelledby="mimicTitle mimicDesc">
+              <title id="mimicTitle">Water pumping station mimic</title>
+              <desc id="mimicDesc">Wet well tank with level, one duty pump, and a discharge line. Pump state and level are driven by the controls below.</desc>
+              <rect x="0" y="0" width="480" height="260" class="m-bg"/>
+              <!-- tank -->
+              <rect x="40" y="40" width="110" height="170" class="m-vessel" rx="4"/>
+              <rect id="tankFill" x="42" y="208" width="106" height="0" class="m-fill"/>
+              <line x1="40" y1="70" x2="150" y2="70" class="m-limit hi"/>
+              <line x1="40" y1="190" x2="150" y2="190" class="m-limit lo"/>
+              <text x="95" y="30" text-anchor="middle" class="m-label">WET WELL</text>
+              <text id="levelText" x="95" y="232" text-anchor="middle" class="m-value">0.0 m</text>
+              <!-- pipes -->
+              <path d="M150 190 H230" class="m-pipe"/>
+              <path d="M290 190 H440 V90" class="m-pipe"/>
+              <!-- pump (pick target) -->
+              <g id="pump" tabindex="0" role="button" aria-label="Pump 1, stopped. Open actions" class="m-pump">
+                <circle cx="260" cy="190" r="30" class="m-pump-body" id="pumpBody"/>
+                <path d="M245 205 L260 172 L275 205 Z" class="m-pump-sym"/>
+                <text x="260" y="244" text-anchor="middle" class="m-label">PUMP 1</text>
+              </g>
+              <text id="pumpState" x="260" y="136" text-anchor="middle" class="m-value">STOPPED</text>
+              <text x="440" y="75" text-anchor="middle" class="m-label">TO NETWORK</text>
+              <text id="alarmBadge" x="460" y="22" text-anchor="end" class="m-alarm" hidden></text>
+            </svg>
+            <div class="pick-menu" id="pickMenu" role="menu" aria-label="Pump 1 actions" hidden>
+              <button role="menuitem" data-act="start">Start</button>
+              <button role="menuitem" data-act="stop">Stop</button>
+              <button role="menuitem" data-act="trend">Open trend</button>
+              <button role="menuitem" data-act="props">Point details</button>
+            </div>
+          </div>
+
+          <div class="lab-controls">
+            <fieldset>
+              <legend>Simulated pump status point</legend>
+              <label><input type="radio" name="pstate" value="stopped" checked> Stopped</label>
+              <label><input type="radio" name="pstate" value="running"> Running</label>
+              <label><input type="radio" name="pstate" value="fault"> Fault</label>
+            </fieldset>
+            <label class="slider" for="level">Wet well level: <output id="levelOut">0.0</output> m</label>
+            <input type="range" id="level" min="0" max="4" step="0.1" value="0">
+            <p class="muted small" id="labLog" aria-live="polite">Event log: ready.</p>
+            <table class="mini">
+              <caption class="visually-hidden">Point state mapping</caption>
+              <thead><tr><th scope="col">State</th><th scope="col">Visual cue</th></tr></thead>
+              <tbody>
+                <tr><td>Stopped</td><td>Gray body, no color</td></tr>
+                <tr><td>Running</td><td>Dark body, white symbol</td></tr>
+                <tr><td>Fault</td><td>Red outline + text badge (not color alone)</td></tr>
+                <tr><td>Level &gt; 3.5 m</td><td>Amber High-level badge</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TUTORIAL 1 -->
+      <section class="view" data-view="t1" id="t1" hidden>
+        <h1>Tutorial 1 · Database Hierarchy &amp; Template Instantiation</h1>
+        <p class="lead">Build the agac.ae tree once, template every standard station, then instantiate with minimal overrides.</p>
+        <div class="callout safety" role="note"><strong>Safety.</strong> Perform on the engineering or test database first. Take a database backup before bulk changes. Do not instantiate onto a live production server without change approval.</div>
+
+        <h2 id="t1-s1" data-search-item data-title="T1 · Root System Group and agac.ae tagging" data-section="Tutorial 1">Step 1 · Root System Group and asset tagging</h2>
+        <ol class="steps">
+          <li>In ViewX, open <em>Database Bar → Groups</em>. Under the Root Group, create <code>AGAC</code> as the top-level group.</li>
+          <li>Create region groups using a 3-letter code, for example <code>DXB</code>, <code>AUH</code>, <code>SHJ</code>.</li>
+          <li>Under each region create site groups with the format <code>&lt;TYPE&gt;&lt;NN&gt;</code>, such as <code>WPS01</code> (Water Pumping Station) or <code>SSF01</code> (Substation Feeder).</li>
+          <li>Use asset names without spaces; use the Description field for human-readable names. Resulting full name: <code>AGAC.DXB.WPS01.Pump1.Run</code>.</li>
+        </ol>
+        <div class="table-wrap"><table>
+          <caption class="visually-hidden">Example tagging convention</caption>
+          <thead><tr><th scope="col">Level</th><th scope="col">Pattern</th><th scope="col">Example</th></tr></thead>
+          <tbody>
+            <tr><td>Company</td><td>AGAC</td><td>AGAC</td></tr>
+            <tr><td>Region</td><td>3 letters</td><td>DXB</td></tr>
+            <tr><td>Site</td><td>TYPE + 2 digits</td><td>WPS01</td></tr>
+            <tr><td>Asset</td><td>Name + number</td><td>Pump1</td></tr>
+            <tr><td>Point</td><td>Function</td><td>Run, Fault, Level</td></tr>
+          </tbody>
+        </table></div>
+        <p class="muted small">This convention is a suggested standard; align with the agac.ae master asset register before use.</p>
+
+        <h2 id="t1-s2" data-search-item data-title="T1 · Create a Group Template" data-section="Tutorial 1">Step 2 · Create a Group Template for a standard station</h2>
+        <ol class="steps">
+          <li>Create a template group, for example <code>AGAC.Templates.WPS_Std</code>, and mark it as a template (Group Template).</li>
+          <li>Inside it, add the outstation, points, logic, and mimic that every pumping station shares.</li>
+          <li>Define <strong>template parameters</strong> for anything that differs per site: <code>SiteName</code>, <code>RTU_IP</code>, <code>RTU_Addr</code>, <code>HiLevelLimit</code>.</li>
+          <li>Bind properties to parameters by referencing the parameter in the property field.</li>
+        </ol>
+
+        <h2 id="t1-s3" data-search-item data-title="T1 · Point definitions and alarm thresholds" data-section="Tutorial 1">Step 3 · Point definitions and alarm thresholds</h2>
+        <div class="table-wrap"><table>
+          <caption class="visually-hidden">Template point list</caption>
+          <thead><tr><th scope="col">Point</th><th scope="col">Type</th><th scope="col">Units / States</th><th scope="col">Alarm</th></tr></thead>
+          <tbody>
+            <tr><td>Level</td><td>Analog In</td><td>m, 0–4.0</td><td>HiHi 3.8 · Hi 3.5 · Lo 1.0</td></tr>
+            <tr><td>Pump1.Run</td><td>Digital In</td><td>Stopped / Running</td><td>None (event only)</td></tr>
+            <tr><td>Pump1.Fault</td><td>Digital In</td><td>Normal / Fault</td><td>High priority on Fault</td></tr>
+            <tr><td>Pump1.StartCmd</td><td>Digital Out</td><td>Stop / Start</td><td>Control failure alarm</td></tr>
+            <tr><td>CommsFail</td><td>Outstation status</td><td>OK / Failed</td><td>Medium after 60 s</td></tr>
+          </tbody>
+        </table></div>
+        <p class="muted small">Thresholds above are placeholders; apply the values from the process design document.</p>
+
+        <h2 id="t1-s4" data-search-item data-title="T1 · Instances and Property Overrides" data-section="Tutorial 1">Step 4 · Instantiate and apply Property Overrides</h2>
+        <ol class="steps">
+          <li>Create a group under the site path (for example <code>AGAC.DXB.WPS01</code>) and set its template to <code>WPS_Std</code>.</li>
+          <li>Fill in the template parameters: <code>RTU_IP = 10.20.30.41</code>, <code>RTU_Addr = 41</code>.</li>
+          <li>Use a Property Override only when a value cannot be a parameter. Record every override in the site commissioning sheet.</li>
+          <li>Save. Confirm the instance shows the full point tree.</li>
+        </ol>
+        <h3>Verification</h3>
+        <ul class="checklist" data-check="t1">
+          <li><label><input type="checkbox"> Full name of every point follows AGAC.REGION.SITE.Asset.Point</label></li>
+          <li><label><input type="checkbox"> Instance IP and RTU address match the site IP schedule</label></li>
+          <li><label><input type="checkbox"> Change to template propagates to a test instance</label></li>
+          <li><label><input type="checkbox"> Overrides documented</label></li>
+        </ul>
+      </section>
+
+      <!-- TUTORIAL 2 -->
+      <section class="view" data-view="t2" id="t2" hidden>
+        <h1>Tutorial 2 · Driver Configuration &amp; Outstation Telemetry</h1>
+        <p class="lead">DNP3 and Modbus TCP: channel, outstation, points, scaling.</p>
+        <div class="callout safety" role="note"><strong>Safety.</strong> Keep new outstations <em>disabled</em> (or in simulation) until addressing is confirmed. Never enable control points on a live RTU until output blocking is verified.</div>
+
+        <h2 id="t2-s1" data-search-item data-title="T2 · Channel (TCP/IP Direct)" data-section="Tutorial 2">Step 1 · Channel object</h2>
+        <ol class="steps">
+          <li>Under the site group create a driver channel for the protocol (DNP3 Channel or Modbus equivalent).</li>
+          <li>Set <em>Channel type</em> to TCP/IP. Choose <strong>Direct</strong> if the server connects out to the RTU, or <strong>Listening</strong> if the RTU dials in.</li>
+          <li>Set port: DNP3 <code>20000</code>, Modbus TCP <code>502</code>.</li>
+          <li>Set connection timeouts and retry intervals. Starting values: connect timeout 5 s, retry 30 s.</li>
+          <li>Serial/radio links use handshaking and RTS/CTS settings matched to the modem; TCP does not need them.</li>
+        </ol>
+
+        <h2 id="t2-s2" data-search-item data-title="T2 · Outstation Sets and Outstations" data-section="Tutorial 2">Step 2 · Outstation Sets and Outstations</h2>
+        <ol class="steps">
+          <li>Create the outstation under the channel. For DNP3 set <em>Outstation address</em> and <em>Master address</em> (agac.ae default master = <code>1</code>).</li>
+          <li>Set the IP of the remote endpoint when using a direct channel.</li>
+          <li>Set poll rates: Class 0 integrity 15 min, Class 1/2/3 event poll 10 s; enable unsolicited if the RTU supports it.</li>
+          <li>Enable time synchronisation if required and agree one time source for all RTUs.</li>
+          <li>Group outstations into an Outstation Set when they should share settings or failover paths.</li>
+        </ol>
+<pre class="code" data-lang="text"><code>Channel  : AGAC.DXB.WPS01.Ch1   TCP Direct  port 20000
+Outstation: AGAC.DXB.WPS01.RTU   Addr 41  Master 1
+Polls    : Integrity 900 s | Event 10 s | Unsolicited ON (Class 1)</code></pre>
+
+        <h2 id="t2-s3" data-search-item data-title="T2 · Points AI DI AO DO" data-section="Tutorial 2">Step 3 · Add AI, DI, AO, DO points</h2>
+        <div class="table-wrap"><table>
+          <caption class="visually-hidden">Point types</caption>
+          <thead><tr><th scope="col">Type</th><th scope="col">Direction</th><th scope="col">Key properties</th></tr></thead>
+          <tbody>
+            <tr><td>AI Analog Input</td><td>RTU → SCADA</td><td>Point address, raw range, engineering range, units, deadband</td></tr>
+            <tr><td>DI Digital Input</td><td>RTU → SCADA</td><td>Point address, state text, invert, alarm on state</td></tr>
+            <tr><td>AO Analog Output</td><td>SCADA → RTU</td><td>Engineering limits, select-before-operate, security level</td></tr>
+            <tr><td>DO Digital Output</td><td>SCADA → RTU</td><td>Control model (direct / SBO), pulse time, confirmation point</td></tr>
+          </tbody>
+        </table></div>
+        <p>For Modbus, map registers per the RTU vendor table:</p>
+<pre class="code" data-lang="text"><code>Level      Holding reg 40001 (offset 0), INT16,  raw 0-10000  -> 0-4.0 m
+Pump1.Run  Coil 00001   (offset 0)
+Pump1.Cmd  Coil 00101   (offset 100) write</code></pre>
+
+        <h2 id="t2-s4" data-search-item data-title="T2 · Scaling, deadbands and event persistence" data-section="Tutorial 2">Step 4 · Scaling, deadbands and event persistence</h2>
+        <ol class="steps">
+          <li>Enter <strong>raw range</strong> (counts the RTU sends) and <strong>engineering range</strong> (real units). Geo SCADA computes the linear scaling.</li>
+          <li>Set engineering units text (m, bar, kW) so trends and mimics show them.</li>
+          <li>Set a <strong>deadband</strong> of 0.5–1 % of span to avoid noise-driven events; use a smaller one for tight control loops.</li>
+          <li>Set events and history so important changes are retained: enable event logging for state changes and historic logging with the agreed compression tolerance.</li>
+        </ol>
+<pre class="code" data-lang="text"><code>Eng = EngMin + (Raw - RawMin) * (EngMax - EngMin) / (RawMax - RawMin)
+e.g. raw 5000 of 0-10000, eng 0-4.0  ->  2.0 m</code></pre>
+        <h3>Verification</h3>
+        <ul class="checklist" data-check="t2">
+          <li><label><input type="checkbox"> Outstation status shows Online</label></li>
+          <li><label><input type="checkbox"> Class 0 integrity poll returns all points</label></li>
+          <li><label><input type="checkbox"> Raw and scaled values match the RTU front-panel</label></li>
+          <li><label><input type="checkbox"> Control outputs tested with the plant isolated</label></li>
+        </ul>
+      </section>
+
+      <!-- TUTORIAL 3 -->
+      <section class="view" data-view="t3" id="t3" hidden>
+        <h1>Tutorial 3 · Interactive Mimics &amp; High-Performance HMI</h1>
+        <p class="lead">Quiet gray displays where color means something.</p>
+        <div class="callout safety" role="note"><strong>Safety.</strong> Every control on a mimic needs confirmation, a permission level, and a status echo. Test controls only in the simulation database.</div>
+
+        <h2 id="t3-s1" data-search-item data-title="T3 · ISA-101 grayscale base" data-section="Tutorial 3">Step 1 · ISA-101 base layout</h2>
+        <ol class="steps">
+          <li>Create a new mimic under the site group. Set a light-gray background (about RGB 200,200,200, or dark gray in dark rooms) and use it consistently.</li>
+          <li>Draw equipment in grayscale; use thin outlines and no gradients, shadows, or 3D effects.</li>
+          <li>Reserve color for abnormal states: red/amber for alarms, one accent for operator-selected items. Add a text or shape cue so color is not the only signal.</li>
+          <li>Use a four-level display hierarchy: overview, area, equipment detail, diagnostics.</li>
+        </ol>
+        <h2 id="t3-s2" data-search-item data-title="T3 · Dynamic animations and pick actions" data-section="Tutorial 3">Step 2 · Animations and pick actions</h2>
+        <ol class="steps">
+          <li>Select the pump symbol → <em>Animations</em> → <strong>Color / Fill</strong>. Bind to <code>Pump1.Run</code>: Stopped = light gray, Running = dark gray.</li>
+          <li>Add a <strong>Fault</strong> animation: show a red outline and a visible text badge.</li>
+          <li>For the tank, add a <strong>Size / Scale</strong> animation on height bound to <code>Level</code> with the engineering range as min/max.</li>
+          <li>Add <strong>Pick Actions</strong>: left-click shows the context menu (Start, Stop, Trend, Details); double-click opens the point display.</li>
+          <li>Place a <strong>Trend</strong> pick action that opens the saved trend object for the point.</li>
+        </ol>
+        <p>Try the behavior in the <a href="#lab" data-nav="lab">Mimic / Point Preview</a>.</p>
+        <h2 id="t3-s3" data-search-item data-title="T3 · Embedded trends, alarm banners, health" data-section="Tutorial 3">Step 3 · Embedded trends, alarm banner, health indicators</h2>
+        <ol class="steps">
+          <li>Insert a Trend control and bind pens to Level and Pump1.Run, with a one-hour default range.</li>
+          <li>Insert an alarm banner/list control at the top of every display, filtered to the user's area.</li>
+          <li>Add a system health indicator bound to <code>CommsFail</code> and the server status so loss of data is obvious.</li>
+        </ol>
+        <h3>Verification</h3>
+        <ul class="checklist" data-check="t3">
+          <li><label><input type="checkbox"> Display readable on a 7-inch tablet</label></li>
+          <li><label><input type="checkbox"> Alarm state is distinguishable without color</label></li>
+          <li><label><input type="checkbox"> Pick actions respect operator permissions</label></li>
+          <li><label><input type="checkbox"> Loads correctly in Virtual ViewX</label></li>
+        </ul>
+      </section>
+
+      <!-- TUTORIAL 4 -->
+      <section class="view" data-view="t4" id="t4" hidden>
+        <h1>Tutorial 4 · Alarm Prioritization, Redirection &amp; Event Actions</h1>
+        <p class="lead">Fewer, better alarms, delivered to the right person.</p>
+        <div class="callout safety" role="note"><strong>Safety.</strong> Suppression hides real conditions. Always time-limit it, record who applied it, and make suppressed states visible on the mimic.</div>
+
+        <h2 id="t4-s1" data-search-item data-title="T4 · Alarm categories" data-section="Tutorial 4">Step 1 · Categories and priorities</h2>
+        <div class="table-wrap"><table>
+          <caption class="visually-hidden">Alarm categories</caption>
+          <thead><tr><th scope="col">Category</th><th scope="col">Priority range</th><th scope="col">Response</th><th scope="col">Example</th></tr></thead>
+          <tbody>
+            <tr><td>Critical</td><td>1–100</td><td>Immediate, escalate in 5 min</td><td>Wet well HiHi level</td></tr>
+            <tr><td>High</td><td>101–400</td><td>Within 15 min</td><td>Pump fault</td></tr>
+            <tr><td>Medium</td><td>401–700</td><td>Within shift</td><td>Comms fail</td></tr>
+            <tr><td>Low</td><td>701–999</td><td>Planned</td><td>Door open</td></tr>
+          </tbody>
+        </table></div>
+        <p class="muted small">Ranges are an agac.ae example; adapt to the alarm philosophy document. Check which direction your version treats as most severe.</p>
+        <h2 id="t4-s2" data-search-item data-title="T4 · Escalation and redirection" data-section="Tutorial 4">Step 2 · Escalation and redirection</h2>
+        <ol class="steps">
+          <li>Define alarm categories and areas under the Alarm settings of the root group.</li>
+          <li>Create redirection rules: Critical → on-call e-mail + SMS immediately; if unacknowledged after 5 min → supervisor group.</li>
+          <li>Configure the e-mail/SMS gateway in the server and test with a dummy point.</li>
+          <li>Set an operator-handover timer for shift changes so alarms always have an owner.</li>
+        </ol>
+        <h2 id="t4-s3" data-search-item data-title="T4 · Alarm suppression and maintenance override" data-section="Tutorial 4">Step 3 · Suppression during commissioning</h2>
+        <ol class="steps">
+          <li>Add a <code>Maintenance</code> digital point per site and bind alarm inhibit to it.</li>
+          <li>When set, alarms from that site are inhibited but still logged to the event journal.</li>
+          <li>Show a clear MAINTENANCE banner on the site mimic while active.</li>
+          <li>Clear the flag at handover and confirm alarms return.</li>
+        </ol>
+        <h3>Verification</h3>
+        <ul class="checklist" data-check="t4">
+          <li><label><input type="checkbox"> Test alarm reaches e-mail/SMS</label></li>
+          <li><label><input type="checkbox"> Unacknowledged alarm escalates on time</label></li>
+          <li><label><input type="checkbox"> Maintenance flag cleared after commissioning</label></li>
+        </ul>
+      </section>
+
+      <!-- TUTORIAL 5 -->
+      <section class="view" data-view="t5" id="t5" hidden>
+        <h1>Tutorial 5 · Commissioning, Diagnostics &amp; Server Status</h1>
+        <p class="lead">Prove the signal path from field to screen.</p>
+        <div class="callout safety" role="note"><strong>Safety.</strong> Coordinate with plant operations. Use simulated or forced inputs only under permit, and restore every forced value afterward.</div>
+
+        <h2 id="t5-s1" data-search-item data-title="T5 · Server Status tool" data-section="Tutorial 5">Step 1 · Server Status</h2>
+        <ol class="steps">
+          <li>Open <em>Server Status</em> from the ViewX System menu or the Server Configuration Tool.</li>
+          <li>Check database size and growth, historian state, and redundancy synchronisation.</li>
+          <li>Review the driver list for channels and outstations that are offline.</li>
+          <li>Review client sessions to confirm who is connected and from where.</li>
+        </ol>
+        <h2 id="t5-s2" data-search-item data-title="T5 · Driver comms logging and packet sniffing" data-section="Tutorial 5">Step 2 · Driver comms logging</h2>
+        <ol class="steps">
+          <li>On the channel or outstation, enable protocol logging to a file at the lowest level that answers the question.</li>
+          <li>Reproduce the fault, then disable logging; logs grow quickly.</li>
+          <li>Read frames: link-layer address, function code, object group/variation, and IIN bits for DNP3.</li>
+          <li>For deeper issues capture on the network with a packet analyser (for example Wireshark on a mirrored port) and compare with driver logs.</li>
+        </ol>
+<pre class="code" data-lang="text"><code>Symptom                         Likely cause
+No response                      wrong IP/port, firewall, wrong outstation addr
+Responses, no points             wrong object group/variation or point index
+Values off by 10x/1000x          scaling raw/eng range mismatch
+Intermittent timeouts            poll too fast, radio/bandwidth, retries too low
+Events missing                   unsolicited disabled or event class unassigned</code></pre>
+        <h2 id="t5-s3" data-search-item data-title="T5 · End-to-end loop test" data-section="Tutorial 5">Step 3 · End-to-end telemetry loop test</h2>
+        <ol class="steps">
+          <li>Field: inject a known value (for example 4, 12, 20 mA for 0/50/100 %).</li>
+          <li>RTU: confirm the register or point shows the value.</li>
+          <li>Server: confirm the raw and scaled value in the point details.</li>
+          <li>HMI: confirm the mimic, trend, and alarm limits respond.</li>
+          <li>Control: with the plant isolated, issue a command and confirm the RTU output and status feedback.</li>
+          <li>Record results on the loop sheet; restore all test conditions.</li>
+        </ol>
+        <div class="table-wrap"><table>
+          <caption class="visually-hidden">Loop test record</caption>
+          <thead><tr><th scope="col">Input</th><th scope="col">Expected</th><th scope="col">Pass</th></tr></thead>
+          <tbody>
+            <tr><td>4 mA</td><td>0.0 m</td><td>☐</td></tr>
+            <tr><td>12 mA</td><td>2.0 m</td><td>☐</td></tr>
+            <tr><td>20 mA</td><td>4.0 m</td><td>☐</td></tr>
+          </tbody>
+        </table></div>
+        <h3>Verification</h3>
+        <ul class="checklist" data-check="t5">
+          <li><label><input type="checkbox"> All outstations Online in Server Status</label></li>
+          <li><label><input type="checkbox"> Loop sheet signed for every analog and control</label></li>
+          <li><label><input type="checkbox"> Forced and simulated values removed</label></li>
+          <li><label><input type="checkbox"> Comms logging disabled</label></li>
+        </ul>
+      </section>
+
+      <footer class="footer">
+        <p>agac.ae · EcoStruxure Geo SCADA Field Engineering Guide · v1.0.0. Independent engineering reference; not an official Schneider Electric document. Verify against vendor documentation.</p>
+      </footer>
+    </main>
+  </div>
+
+  <nav class="bottom-nav" aria-label="Quick navigation">
+    <a href="#home" data-nav="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8v10h-6v-6H9v6H3z" fill="currentColor"/></svg><span>Home</span></a>
+    <a href="#glossary" data-nav="glossary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h12a2 2 0 012 2v16H7a2 2 0 01-2-2z" fill="none" stroke="currentColor" stroke-width="2"/></svg><span>Glossary</span></a>
+    <a href="#t1" data-nav="t1" data-group="tutorials"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg><span>Guides</span></a>
+    <a href="#lab" data-nav="lab"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 21h8" stroke="currentColor" stroke-width="2"/></svg><span>Preview</span></a>
+  </nav>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
