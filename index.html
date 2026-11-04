@@ -48,6 +48,7 @@
         <li><a href="#lab" data-nav="lab">Mimic / Point Preview</a></li>
         <li class="nav-label">Field Procedures</li>
         <li><a href="#t1" data-nav="t1">1 · Hierarchy &amp; Templates</a></li>
+        <li><a href="#t1b" data-nav="t1b">1B · Advanced Templates</a></li>
         <li><a href="#t2" data-nav="t2">2 · Drivers &amp; Telemetry</a></li>
         <li><a href="#t3" data-nav="t3">3 · Mimics &amp; HMI</a></li>
         <li><a href="#t4" data-nav="t4">4 · Alarms &amp; Redirection</a></li>
@@ -86,6 +87,7 @@
           <a class="card" href="#glossary" data-nav="glossary"><h2>Glossary &amp; Architecture</h2><p>Redundancy, clients, database model, drivers, history, alarms, logic.</p></a>
           <a class="card" href="#lab" data-nav="lab"><h2>Mimic / Point Preview</h2><p>Interactive ISA-101 pump station demo with point states and pick actions.</p></a>
           <a class="card" href="#t1" data-nav="t1"><h2>1 · Hierarchy &amp; Templates</h2><p>Root group, tagging, group templates, instances, overrides.</p></a>
+          <a class="card" href="#t1b" data-nav="t1b"><h2>1B · Advanced Templates</h2><p>Nested templates, property overrides, propagation, free-standing objects.</p></a>
           <a class="card" href="#t2" data-nav="t2"><h2>2 · Drivers &amp; Telemetry</h2><p>Channels, outstations, AI/DI/AO/DO, scaling, deadbands.</p></a>
           <a class="card" href="#t3" data-nav="t3"><h2>3 · Mimics &amp; HMI</h2><p>Grayscale base, animations, pick actions, embedded trends.</p></a>
           <a class="card" href="#t4" data-nav="t4"><h2>4 · Alarms &amp; Redirection</h2><p>Priorities, escalation, suppression during commissioning.</p></a>
@@ -176,6 +178,8 @@
         <article class="term" id="term-templates" data-search-item data-title="Group Templates" data-section="Glossary · Database">
           <h3>Group Templates</h3>
           <p>A reusable blueprint of a group: points, outstations, logic, and mimics, with substitutable template parameters. Editing the template updates all instances.</p>
+        
+          <p><span class="tag">Example</span> Adding a <code>High-High Vibration</code> alarm to <code>Template_CentrifugalPump</code> propagates the threshold to all 48 field pump instances at once.</p>
         </article>
         <article class="term" id="term-instances" data-search-item data-title="Group Instances" data-section="Glossary · Database">
           <h3>Group Instances</h3>
@@ -186,6 +190,20 @@
           <p>Per-instance changes to properties that the template would otherwise control, such as IP address, outstation address, or an alarm limit at one site. Keep overrides to a minimum and document each one.</p>
         
           <p><span class="tag">Example</span> In <code>Template_PumpingStation</code> the high-level alarm delay is 10 s. In instance <code>WPS_01</code> only <code>Outstation.DirectHost</code> is overridden to <code>10.20.5.42</code>; the alarm settings stay tied to the template.</p>
+        
+          <p><span class="tag">Example</span> The <code>WetWell_Level</code> high alarm is locked by the template at <code>4.0 m</code>, while <code>Outstation.DirectHost</code> is marked as an override so each station talks to its own RTU.</p>
+        </article>
+
+        <article class="term" id="term-nested" data-search-item data-title="Nested Templates" data-section="Glossary · Database">
+          <h3>Nested Templates</h3>
+          <p>A Group Template embedded inside another Group Template to build multi-tier models. Updating the child template cascades up through every parent instance.</p>
+          <p><span class="tag">Example</span> <code>Template_Valve</code> and <code>Template_Pump</code> are nested inside <code>Template_DualPumpStation</code>, which is itself nested into <code>Template_WaterTransmissionNetwork</code>.</p>
+        </article>
+        <article class="term" id="term-freestanding" data-search-item data-title="Free-Standing Objects" data-section="Glossary · Database">
+          <h3>Free-Standing Objects</h3>
+          <p>Database objects created directly inside a Group Instance that do not exist in its template. They work normally, survive template updates, and do not affect other instances.</p>
+          <p><span class="tag">Context</span> One-off site variations, legacy equipment, or temporary test points.</p>
+          <p><span class="tag">Example</span> <code>WPS03</code> has a diesel backup generator, so three monitoring points are added as free-standing objects in <code>AGAC.DXB.WPS03</code> without touching <code>Template_PumpStation</code>.</p>
         </article>
 
         <h2 id="g-drivers">Protocol Drivers &amp; Telemetry</h2>
@@ -211,6 +229,13 @@
         <article class="term" id="term-mqtt" data-search-item data-title="MQTT / IoT Integration" data-section="Glossary · Drivers">
           <h3>MQTT / IoT</h3>
           <p>Publish/subscribe messaging for lightweight devices and IoT gateways. Topics map to points. Always use TLS and per-device credentials, and decide a payload format (JSON, Sparkplug B) up front.</p>
+        </article>
+
+        <article class="term" id="term-cip" data-search-item data-title="Allen-Bradley / Rockwell CIP Driver (EtherNet/IP)" data-section="Glossary · Drivers">
+          <h3>Allen-Bradley / Rockwell CIP Driver</h3>
+          <p>Geo SCADA's driver for Rockwell controllers (Micro800, CompactLogix, ControlLogix) over EtherNet/IP using CIP. It supports analog, digital and string data, and tags read can be arrays or structures.</p>
+          <p><span class="tag">Context</span> Reads controller tags directly, so no separate OPC server such as RSLinx is needed. Explicit messaging uses TCP <code>44818</code>. Time synchronisation and driver diagnostics are available; confirm the exact feature list for your release.</p>
+          <p><span class="tag">Example</span> An intake station CompactLogix PLC (for example a 1769-L33ER) is read over TCP/IP at port 44818, for structured tags like <code>Pump01.Status.Running</code> and array tags like <code>Totalizer_History[0..31]</code>.</p>
         </article>
 
         <h2 id="g-telemetry">Telemetry &amp; Industrial Protocol Terms</h2>
@@ -487,6 +512,7 @@ SELECT FullName, Id FROM CGroup ORDER BY FullName</code></pre>
           <li><label><input type="checkbox"> Change to template propagates to a test instance</label></li>
           <li><label><input type="checkbox"> Overrides documented</label></li>
         </ul>
+        <p>Next: <a href="#t1b" data-nav="t1b">Tutorial 1B · Advanced Templates</a> (nested templates, propagation, free-standing objects).</p>
       </section>
 
       <!-- TUTORIAL 2 -->
@@ -1029,8 +1055,70 @@ END_PROGRAM</code></pre>
         </ul>
       </section>
 
+      <!-- TUTORIAL 1B -->
+      <section class="view" data-view="t1b" id="t1b" hidden>
+        <h1>Tutorial 1B · Modular Template Engineering &amp; Nested Instantiation</h1>
+        <p class="lead">Covers: relative referencing in mimics, copy/paste pumps, templates, property overrides, changes to templates, free-standing objects, and nested templates.</p>
+        <div class="callout warn" role="note"><strong>Verify menus.</strong> Menu names (Property Overrides, Create New → Group Instance) follow the agac.ae training notes. Confirm them in your release before bulk work.</div>
+        <div class="callout safety" role="note"><strong>Safety.</strong> A template change propagates to every instance, including live stations. Test changes on a single test instance in the engineering database and back up before saving. Never edit shared templates on a production server without change approval.</div>
+
+        <h2 id="t1b-s1" data-search-item data-title="1B · Step 1 Nested template architecture" data-section="Tutorial 1B">Step 1 · Build the nested template architecture</h2>
+        <p>Instead of one flat template, compose from reusable sub-assemblies.</p>
+        <ol class="steps">
+          <li>Create <code>Template_Pump</code> containing <code>Run_DI</code>, <code>Trip_DI</code>, <code>Speed_AI</code>, <code>RunHours_Acc</code>, and a <code>Symbol</code> embedded mimic that uses relative paths such as <code>".Run_DI.CurrentState"</code>.</li>
+          <li>Create the parent <code>Template_PumpStation</code> containing the header pressure transmitter <code>Pressure_AI</code> and sump level transmitter <code>Level_AI</code>.</li>
+          <li>Embed two instances of <code>Template_Pump</code> inside it, named <code>Pump1</code> and <code>Pump2</code>.</li>
+        </ol>
+<pre class="code" data-lang="text"><code>Template_PumpStation
+ ├── Pressure_AI
+ ├── Level_AI
+ ├── Pump1  (instance of Template_Pump)
+ │    ├── Run_DI / Trip_DI / Speed_AI / RunHours_Acc
+ │    └── Symbol
+ └── Pump2  (instance of Template_Pump)</code></pre>
+
+        <h2 id="t1b-s2" data-search-item data-title="1B · Step 2 Configure Property Overrides" data-section="Tutorial 1B">Step 2 · Configure property overrides</h2>
+        <ol class="steps">
+          <li>In <code>Template_Pump</code> right-click <code>Speed_AI</code> → <strong>Property Overrides</strong>.</li>
+          <li>Tick the properties that may differ per site:
+            <ul>
+              <li><strong>Full Scale / Eng Units</strong>: custom pump capacities per site.</li>
+              <li><strong>Address / Point Index</strong>: custom telemetry mapping per RTU/PLC.</li>
+            </ul>
+          </li>
+          <li>In <code>Template_PumpStation</code> right-click the outstation item and allow overrides for <code>Direct Host IP</code> and <code>Outstation Address</code>.</li>
+        </ol>
+        <p class="muted small">Keep the override list short. Everything not ticked stays locked and centrally managed.</p>
+
+        <h2 id="t1b-s3" data-search-item data-title="1B · Step 3 Instantiate and propagate changes to templates" data-section="Tutorial 1B">Step 3 · Instantiate, then handle changes to templates</h2>
+        <ol class="steps">
+          <li>Right-click the region group (for example <code>AGAC.DXB</code>) → <strong>Create New → Group Instance</strong> and select <code>Template_PumpStation</code>.</li>
+          <li>Name the instance <code>WPS02</code>.</li>
+          <li>Fill in the overridden fields, for example RTU IP <code>192.168.10.22</code> and the outstation address.</li>
+          <li><strong>Propagation test.</strong> Open <code>Template_PumpStation</code>, add a calculated point <code>Total_Flow_Calc</code>, and save the template.</li>
+          <li><strong>Verify.</strong> <code>Total_Flow_Calc</code> appears in <code>WPS01</code>, <code>WPS02</code>, and every other instance, without manual work.</li>
+        </ol>
+
+        <h2 id="t1b-s4" data-search-item data-title="1B · Step 4 Free-standing objects inside an instance" data-section="Tutorial 1B">Step 4 · Add free-standing objects inside an instance</h2>
+        <p>Instances are locked to their template structure by default. If one site has extra instrumentation (for example an odor-control bio-filter at <code>WPS02</code>):</p>
+        <ol class="steps">
+          <li>Right-click the instance group → <strong>Create New</strong> → the required point.</li>
+          <li>The new object is a <strong>free-standing object</strong>: fully functional, kept when the template updates, and invisible to other instances.</li>
+          <li>Record each free-standing object on the site commissioning sheet. If the same addition appears at several sites, move it into the template instead.</li>
+        </ol>
+
+        <h3>Verification</h3>
+        <ul class="checklist" data-check="t1b">
+          <li><label><input type="checkbox"> Template_Pump uses relative paths only</label></li>
+          <li><label><input type="checkbox"> Only the intended properties are open to override</label></li>
+          <li><label><input type="checkbox"> Template change reaches all instances on a test run</label></li>
+          <li><label><input type="checkbox"> Free-standing objects survive a template edit</label></li>
+          <li><label><input type="checkbox"> Overrides and free-standing objects recorded per site</label></li>
+        </ul>
+      </section>
+
       <footer class="footer">
-        <p>agac.ae · EcoStruxure Geo SCADA Field Engineering Guide · v1.3.0. Independent engineering reference; not an official Schneider Electric document. Verify against vendor documentation.</p>
+        <p>agac.ae · EcoStruxure Geo SCADA Field Engineering Guide · v1.4.0. Independent engineering reference; not an official Schneider Electric document. Verify against vendor documentation.</p>
       </footer>
     </main>
   </div>
