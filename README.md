@@ -1,308 +1,269 @@
 # ⚡ EcoStruxure Geo SCADA Field Engineering Guide (PWA)
 
+[![PWA - Offline Ready](https://img.shields.io/badge/PWA-Offline%20Ready-00875a?style=for-the-badge&logo=pwa&logoColor=white)](https://githubbest729.github.io/ecostruxure-geoscada-field-guide/)
+[![Schneider Electric - Geo SCADA](https://img.shields.io/badge/Schneider%20Electric-Geo%20SCADA%20Expert-3dcd58?style=for-the-badge&logo=schneiderelectric&logoColor=white)](https://www.se.com/)
+[![DNP3 & Modbus - Telemetry](https://img.shields.io/badge/Telemetry-DNP3%20%7C%20Modbus%20%7C%20MQTT-0284c7?style=for-the-badge)](https://githubbest729.github.io/ecostruxure-geoscada-field-guide/#dnp3)
+[![Standard - ISA 101 HMI](https://img.shields.io/badge/Standard-ISA--101%20HMI-f59e0b?style=for-the-badge)](https://githubbest729.github.io/ecostruxure-geoscada-field-guide/#t3)
+[![License - MIT](https://img.shields.io/badge/License-MIT-64748b?style=for-the-badge)](LICENSE)
+
+An offline-first, mobile-responsive **Progressive Web App (PWA)** and operational handbook for Schneider Electric **EcoStruxure Geo SCADA Expert** (formerly ClearSCADA), engineered specifically for **agac.ae** automation and field telemetry projects.
+
+---
+
 ## 📑 Table of Contents
 
-1. [Overview & Project Goals](#-overview--project-goals)
+- [⚡ EcoStruxure Geo SCADA Field Engineering Guide (PWA)](#-ecostruxure-geo-scada-field-engineering-guide-pwa)
+  - [📑 Table of Contents](#-table-of-contents)
+  - [🎯 Overview \& Highlights](#-overview--highlights)
+  - [🏗️ End-to-End System Architecture](#️-end-to-end-system-architecture)
+  - [📚 Engineering Procedures \& Tutorials](#-engineering-procedures--tutorials)
+    - [Core Procedures](#core-procedures)
+    - [Extended DNP3 \& IoT Protocols](#extended-dnp3--iot-protocols)
+    - [Modular Mimic \& Screen Creation](#modular-mimic--screen-creation)
+  - [📖 Comprehensive Glossary \& Architecture Topics](#-comprehensive-glossary--architecture-topics)
+  - [🖼️ Application Screenshots \& Interactive Preview](#️-application-screenshots--interactive-preview)
+  - [📁 Complete Repository File Inventory](#-complete-repository-file-inventory)
+  - [🎨 Icon Set \& Visual Assets](#-icon-set--visual-assets)
+  - [🚀 GitHub Pages Deployment Guide](#-github-pages-deployment-guide)
+  - [🔄 Cache Management \& Version Bumping](#-cache-management--version-bumping)
+  - [⚠️ Field Standards \& Safety Disclaimer](#️-field-standards--safety-disclaimer)
 
-2. [End-to-End System Architecture](#-end-to-end-system-architecture)
+---
 
-3. [Core Technical Content & Coverage](#-core-technical-content--coverage)
+## 🎯 Overview & Highlights
 
-4. [Application Screenshots & UI Modules](#-application-screenshots--ui-modules)
+- **Zero-Build & Zero-Dependency:** Plain semantic HTML5, modern responsive CSS variables, and Vanilla JavaScript. Runs directly in any modern browser without npm build steps.
+- **Offline-First PWA:** Implements Service Worker pre-caching and runtime cache strategies so field engineers can access telemetry wiring, DNP3 point tables, and diagnostic steps deep in pump station basements or desert substations without cell signal.
+- **Touch-Friendly & WCAG AA Compliant:** Responsive CSS Grid/Flexbox layouts with touch targets $\ge 44 \times 44\text{ px}$, dark/light SCADA theme switching, and safe-area notch padding (`env(safe-area-inset-*)`).
+- **Interactive ISA-101 Mimic Sandbox:** Live in-app testing component demonstrating high-performance grayscale graphics, dynamic point animations, quality badges, and pick-action context menus.
 
-5. [Complete Repository File Structure](#-complete-repository-file-structure)
-
-6. [Asset Directory & Icon Inventory](#-asset-directory--icon-inventory)
-
-7. [GitHub Pages Deployment Guide](#-github-pages-deployment-guide)
-
-8. [Offline Cache & Update Strategy](#-offline-cache--update-strategy)
-
-9. [agac.ae Field Standards & Disclaimer](#-agacae-field-standards--disclaimer)
-
-## 🎯 Overview & Project Goals
-
-This Progressive Web App (PWA) delivers an instant, offline-capable field manual and interactive engineering toolkit designed directly for SCADA engineers, commissioning specialists, and maintenance teams at **agac.ae**.
-
-* 🚀 **Zero-Build Architecture:** Pure HTML5, CSS3 Variables, and Vanilla ES6 JavaScript. No Node.js, Webpack, or framework compilation required.
-
-* 📶 **Offline-First PWA:** Native Service Worker pre-caching ensures uninterrupted access in remote pump stations, deep substations, and dry wells lacking GSM/WiFi connectivity.
-
-* 📱 **Mobile & Desktop Shell:** Built with fluid layouts, WCAG AA compliance, safe-area inset handling (`env(safe-area-inset-*)`), and $\ge 44 \times 44\text{ px}$ touch targets.
-
-* 🎛️ **Interactive Diagnostics & Mimic Sandbox:** Test live ISA-101 animations, state changes, pick-actions, and view status overlays right inside the browser.
+---
 
 ## 🏗️ End-to-End System Architecture
 
-The guide covers modern enterprise telemetry topologies, bridging field assets, edge controllers, and Geo SCADA dual-redundant servers.
+The following diagram illustrates the complete telemetry topology implemented across **agac.ae** projects, connecting field smart devices, IoT edge brokers, and redundant Geo SCADA host servers:
 
-### Architectural Data Flow Diagram (SVG)
+```mermaid
+flowchart TB
+    subgraph FIELD["Level 1: Field Instrumentation & Smart RTUs"]
+        direction TB
+        SP["SCADAPack 470 / 570 RTUs<br/>• DNP3 Outstation (TCP 20000)<br/>• RTZ Remote Connect Profile"]
+        RF["Realflo Gas/Liquid Flow Computer<br/>• Coriolis & Orifice Runs<br/>• Adv. Modbus Named Tags"]
+        NR["Node-RED Edge Gateway<br/>• Sparkplug B (spBv1.0)<br/>• JSON 'A' Telemetry"]
+        AB["Rockwell CompactLogix<br/>• Native CIP Driver (TCP 44818)<br/>• Tag Arrays & Structures"]
+    end
 
-```
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" width="100%" height="auto" style="background:#0b1118; border-radius: 8px; font-family: -apple-system, BlinkMacSystemFont, &#39;Segoe UI&#39;, Roboto, Helvetica, Arial, sans-serif;">
-  <defs>
-    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00875a" />
-      <stop offset="100%" stop-color="#00593b" />
-    </linearGradient>
-    <linearGradient id="serverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1e293b" />
-      <stop offset="100%" stop-color="#0f172a" />
-    </linearGradient>
-    <filter id="cardShadow" x="-5%" y="-5%" width="110%" height="110%">
-      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.5" />
-    </filter>
-  </defs>
+    subgraph NETWORK["Level 2: Telemetry & Broker Layer"]
+        direction TB
+        VPN["Secure VPN / APN Tunnels<br/>• IPSec / WireGuard / 4G LTE"]
+        BRK["MQTT Message Broker<br/>• Mosquitto (TCP 1883 / TLS 8883)<br/>• Node & Device Birth Certificates"]
+        OPC["OPC-UA Data Servers<br/>• Secure IEC 62541<br/>• X.509 PKI Certificates"]
+    end
 
-  <!-- Title -->
-  <text x="480" y="38" text-anchor="middle" fill="#f8fafc" font-size="19" font-weight="700" letter-spacing="1">GEO SCADA HYBRID TELEMETRY & IOT TOPOLOGY</text>
-  <text x="480" y="58" text-anchor="middle" fill="#94a3b8" font-size="12">agac.ae Enterprise SCADA Infrastructure Reference</text>
+    subgraph SERVER["Level 3: Geo SCADA Redundant Server Set"]
+        direction TB
+        subgraph MAIN["Main DB Server (Active - Port 5481)"]
+            DB["In-Memory Database & Logic Engines<br/>• IEC 61131-3 (ST, SFC, FBD)"]
+            DDK["Native Drivers & DDK Tasks<br/>• DNP3, AdvModbus, Sparkplug B, MQTT"]
+            HIST["Time-Series Historian Engine<br/>• Compression Deadbands & Archiving"]
+            ALM["Alarm Engine & Redirection<br/>• SMS / Email / Voice Handover"]
+        end
+        subgraph STANDBY["Standby Server (Replicated)"]
+            SDB["Permanent / Hot Standby<br/>• Continuous Transaction Sync"]
+        end
+    end
 
-  <!-- ================= LEVEL 1: FIELD ASSETS ================= -->
-  <g transform="translate(40, 90)">
-    <rect width="240" height="340" rx="6" fill="#131d27" stroke="#253545" stroke-width="1.5" />
-    <rect width="240" height="32" rx="6" fill="#1b2a38" />
-    <text x="120" y="21" text-anchor="middle" fill="#38bdf8" font-size="13" font-weight="700">FIELD TIER (RTU & EDGE)</text>
+    subgraph CLIENTS["Level 4: Human-Machine Interfaces"]
+        VX["ViewX Engineering Client<br/>• Full Database Studio<br/>• ISA-101 Mimics & Ribbon Tools"]
+        VVX["Virtual ViewX Web Client<br/>• Zero-Footprint HTML5<br/>• Tablets & Field Mobile Access"]
+    end
 
-    <!-- SCADAPack x70 -->
-    <rect x="15" y="48" width="210" height="72" rx="4" fill="url(#serverGrad)" stroke="#3b82f6" stroke-width="1.2" filter="url(#cardShadow)" />
-    <text x="25" y="70" fill="#f8fafc" font-size="12" font-weight="700">SCADAPack 470 / 570 RTU</text>
-    <text x="25" y="88" fill="#94a3b8" font-size="10">DNP3 Outstation (TCP 20000)</text>
-    <text x="25" y="104" fill="#38bdf8" font-size="10">Remote Connect / RTZ Profile</text>
+    SP -->|DNP3 Direct| VPN
+    RF -->|Modbus TCP| VPN
+    NR -->|spBv1.0 / JSON| BRK
+    AB -->|CIP Protocol| VPN
 
-    <!-- Gas Metering / Realflo -->
-    <rect x="15" y="132" width="210" height="68" rx="4" fill="url(#serverGrad)" stroke="#10b981" stroke-width="1.2" filter="url(#cardShadow)" />
-    <text x="25" y="152" fill="#f8fafc" font-size="12" font-weight="700">Realflo Flow Computer</text>
-    <text x="25" y="170" fill="#94a3b8" font-size="10">AGA/API Gas & Coriolis Meter</text>
-    <text x="25" y="186" fill="#10b981" font-size="10">Adv. Modbus / Named Tags</text>
+    VPN --> DDK
+    BRK --> DDK
+    OPC --> DDK
 
-    <!-- MQTT Sparkplug Edge -->
-    <rect x="15" y="212" width="210" height="68" rx="4" fill="url(#serverGrad)" stroke="#f59e0b" stroke-width="1.2" filter="url(#cardShadow)" />
-    <text x="25" y="232" fill="#f8fafc" font-size="12" font-weight="700">Node-RED / Edge Gateway</text>
-    <text x="25" y="250" fill="#94a3b8" font-size="10">Sparkplug B (spBv1.0 Payload)</text>
-    <text x="25" y="266" fill="#f59e0b" font-size="10">mTLS / JSON 'A' Telemetry</text>
-
-    <!-- Legacy / Allen-Bradley -->
-    <rect x="15" y="292" width="210" height="32" rx="4" fill="#1e293b" stroke="#64748b" stroke-width="1" />
-    <text x="120" y="312" text-anchor="middle" fill="#cbd5e1" font-size="11">Rockwell CompactLogix (CIP: 44818)</text>
-  </g>
-
-  <!-- ================= LEVEL 2: TRANSMISSION / BROKERS ================= -->
-  <g transform="translate(340, 150)">
-    <rect width="180" height="220" rx="6" fill="#131d27" stroke="#253545" stroke-width="1.5" />
-    <rect width="180" height="32" rx="6" fill="#1b2a38" />
-    <text x="90" y="21" text-anchor="middle" fill="#f59e0b" font-size="12" font-weight="700">COMMUNICATION</text>
-
-    <rect x="15" y="48" width="150" height="42" rx="4" fill="#1e293b" stroke="#475569" stroke-width="1" />
-    <text x="75" y="66" text-anchor="middle" fill="#f8fafc" font-size="11" font-weight="600">MQTT Broker</text>
-    <text x="75" y="80" text-anchor="middle" fill="#94a3b8" font-size="9">Mosquitto / Port 1883/8883</text>
-
-    <rect x="15" y="102" width="150" height="42" rx="4" fill="#1e293b" stroke="#475569" stroke-width="1" />
-    <text x="75" y="120" text-anchor="middle" fill="#f8fafc" font-size="11" font-weight="600">Secure VPN Tunnel</text>
-    <text x="75" y="134" text-anchor="middle" fill="#94a3b8" font-size="9">IPSec / Cellular APN</text>
-
-    <rect x="15" y="156" width="150" height="42" rx="4" fill="#1e293b" stroke="#475569" stroke-width="1" />
-    <text x="75" y="174" text-anchor="middle" fill="#f8fafc" font-size="11" font-weight="600">OPC-UA Server</text>
-    <text x="75" y="188" text-anchor="middle" fill="#94a3b8" font-size="9">TCP 4840 / PKI Encryption</text>
-  </g>
-
-  <!-- ================= LEVEL 3: GEO SCADA CORE ================= -->
-  <g transform="translate(580, 90)">
-    <rect width="340" height="340" rx="6" fill="#131d27" stroke="#253545" stroke-width="1.5" />
-    <rect width="340" height="32" rx="6" fill="#1b2a38" />
-    <text x="170" y="21" text-anchor="middle" fill="#00c853" font-size="13" font-weight="700">GEO SCADA SERVER SET (MAIN / STANDBY)</text>
-
-    <!-- Core DB Engine -->
-    <rect x="20" y="48" width="300" height="96" rx="4" fill="url(#primaryGrad)" filter="url(#cardShadow)" />
-    <text x="170" y="72" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">Main DB Server (Port 5481)</text>
-    <text x="170" y="90" text-anchor="middle" fill="#e2e8f0" font-size="11">DDK Task Processes & High-Speed In-Memory DB</text>
-    <text x="170" y="106" text-anchor="middle" fill="#e2e8f0" font-size="10">Automatic Sparkplug B / RTZ Auto-Configuration</text>
-    <text x="170" y="122" text-anchor="middle" fill="#e2e8f0" font-size="10">Main / Standby Redundancy & Triple Standby Sync</text>
-
-    <!-- Clients Layer -->
-    <rect x="20" y="156" width="140" height="74" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1" />
-    <text x="90" y="178" text-anchor="middle" fill="#f8fafc" font-size="11" font-weight="700">ViewX Client</text>
-    <text x="90" y="196" text-anchor="middle" fill="#94a3b8" font-size="9">Engineering Studio</text>
-    <text x="90" y="212" text-anchor="middle" fill="#38bdf8" font-size="9">ISA-101 Mimics & Logic</text>
-
-    <rect x="180" y="156" width="140" height="74" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1" />
-    <text x="250" y="178" text-anchor="middle" fill="#f8fafc" font-size="11" font-weight="700">Virtual ViewX</text>
-    <text x="250" y="196" text-anchor="middle" fill="#94a3b8" font-size="9">Zero-Footprint HTML5</text>
-    <text x="250" y="212" text-anchor="middle" fill="#10b981" font-size="9">Field Tablets & Web</text>
-
-    <!-- Historian & Notification -->
-    <rect x="20" y="242" width="300" height="42" rx="4" fill="#1e293b" stroke="#64748b" stroke-width="1" />
-    <text x="170" y="260" text-anchor="middle" fill="#f8fafc" font-size="11" font-weight="600">Historian & Enterprise Export</text>
-    <text x="170" y="274" text-anchor="middle" fill="#94a3b8" font-size="9">Raw Deadbanding, Historic Calculation, Wonderware / eDNA Export</text>
-
-    <!-- Alarm Redirection -->
-    <rect x="20" y="294" width="300" height="26" rx="4" fill="#1e293b" stroke="#ef4444" stroke-width="1" />
-    <text x="170" y="311" text-anchor="middle" fill="#ef4444" font-size="10" font-weight="700">Alarm Redirection Engine → On-Call SMS / Email / Voice</text>
-  </g>
-
-  <!-- Connection Lines & Arrows -->
-  <path d="M 280 120 L 580 120" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4,4" fill="none" />
-  <path d="M 280 250 L 340 200" stroke="#f59e0b" stroke-width="1.5" fill="none" />
-  <path d="M 520 200 L 580 120" stroke="#f59e0b" stroke-width="1.5" fill="none" />
-</svg>
+    DB <==>|Triple Redundancy Link| SDB
+    DB --> VX
+    DB --> VVX
+    ALM -->|Automated Escalation| VVX
 ```
 
-## 📚 Core Technical Content & Coverage
+---
 
-### 1. Protocols & Industrial Telemetry Guides
+## 📚 Engineering Procedures & Tutorials
 
-* **DNP3 Implementation:** Complete 4-tier binding (`Channel -> Outstation Set -> Outstation -> Points`), Class 0/1/2/3 polling strategies, unsolicited report configuration, and Select-Before-Operate (SBO) digital controls.
+### Core Procedures
+1. **Tutorial 1 · Database Hierarchy & Template Instantiation:**
+   - Setting up root group conventions (`AGAC.DXB.WPS01.Pump1.Run`).
+   - Standardizing asset tags, site numbering, and human-readable descriptions.
+   - Creating master Group Templates and binding Group Instances.
+2. **Tutorial 1B · Advanced Templates & Instantiation:**
+   - Building multi-tier nested templates (`Template_Pump` nested inside `Template_PumpStation`).
+   - Unlocking Property Overrides for RTU IP endpoints and instrument calibration limits.
+   - Live template propagation testing ("Changes to templates").
+   - Creating Free-Standing Objects for unique, site-specific instrumentation.
+3. **Tutorial 2 · Driver Configuration & Outstation Telemetry:**
+   - Creating Direct Channels (TCP/IP Port `20000` for DNP3, Port `502` for Modbus TCP).
+   - Binding Outstation Sets, Direct Outstations, and polling parameters.
+   - Raw analog scaling (ADC counts `0–32767` $\rightarrow$ engineering range `0.0–5.0 m`).
+4. **Tutorial 3 · Interactive Mimics & High-Performance HMI:**
+   - Implementing ISA-101 situational awareness (neutral gray canvas, shape + text alert cues).
+   - Configuring animations (Fill, Outline, Size/Scale, and visibility).
+   - Binding Pick Actions for Object Menus, Faceplates, and Trend displays.
+5. **Tutorial 4 · Alarm Prioritization, Redirection & Event Actions:**
+   - Configuring 4-tier alarm matrices (Critical, High, Medium, Low).
+   - Setting unacknowledged escalation rules with automatic SMS/email redirection.
+   - Safe alarm suppression procedures during field commissioning.
+6. **Tutorial 5 · Commissioning, Diagnostics & Server Status:**
+   - Utilizing Server Status tool to review DB cache, write locks, and memory health.
+   - Activating driver communications logging and packet decoding.
+   - Executing point hand controls and dry-loop testing.
 
-* **SCADAPack x70 Upload Revolution:** Bidirectional round-trip management, importing `.rtz` packages from Remote Connect, over-the-air firmware deployment, and automated point synthesis.
+### Extended DNP3 & IoT Protocols
+- **DNP3 Implementation Guide (`#dnp3`):** Complete walkthrough for Direct Channels, Direct Outstation Sets, Generic/SCADAPack Outstations, Class 0 integrity polls (`15M`), Class 1/2/3 event scans (`5S`), and Select-Before-Operate (SBO) command mappings.
+- **SCADAPack x70 Upload Revolution:** Importing `.rtz` packages exported from Schneider Electric Remote Connect to automatically generate Geo SCADA database trees.
+- **Sparkplug B & Node-RED Simulation:** Setting up `spBv1.0` brokers, auto-discovering device metric dictionaries from `DBIRTH` packets, and injecting test vectors using Node-RED.
+- **Native Rockwell CIP Integration:** Parameterizing Ethernet/IP channels for Allen-Bradley ControlLogix and CompactLogix PLCs without third-party OPC servers.
 
-* **MQTT & Sparkplug B (`spBv1.0`):** Native broker connectivity, JSON 'A' direct tag addressing, `DBIRTH`/`DDEATH` life-cycle parsing, certificate management (mTLS), and Node-RED simulation workflows.
+### Modular Mimic & Screen Creation
+- **Tutorial 3B · Embedded Symbols (`Pump.Symbol`):** Creating self-contained graphic components with relative dot notation (`.Status`, `.Flow`) to embed cleanly onto overview screens.
+- **Tutorial 3C · Parameterized Faceplates:** Building generic diagnostic popups driven by string parameters (`PumpPath = "AGAC.DXB.WPS01.Pump2"`).
+- **Procedure 9 · Bulk Site Duplication:** Replicating station groups in seconds using ViewX **Edit $\rightarrow$ Find & Replace DB References**.
 
-* **Rockwell / Allen-Bradley CIP:** Native driver parameterization for Micro800, CompactLogix, and ControlLogix using structured UDTs and tag arrays.
+---
 
-* **Realflo EFM (Custody Transfer):** Coriolis and Orifice gas/water/liquid flow run objects, AGA/API compressibility standards, and contract hour volume accumulation.
+## 📖 Comprehensive Glossary & Architecture Topics
 
-### 2. ViewX Graphic Engineering (ISA-101)
+The app includes an extensive offline-searchable glossary covering more than 60 industrial SCADA terms:
 
-* **Modular Symbol Design:** Creating embedded components using relative dot referencing (`.Status.CurrentState`, `.Flow.CurrentValue`) for portable multi-pump arrangements.
+| Category | Key Concepts Covered |
+|:---|:---|
+| **Server Architecture** | Main/Standby Redundancy, Triple Standby, Permanent Standby, DB Server Port 5481, Lock Diagnostics, Data File Cache |
+| **Client Environments** | ViewX Engineering Client, Virtual ViewX (HTML5), Ribbon Workspace (Home, Edit, Graphics, View) |
+| **Database Model** | Root Groups, Group Templates, Group Instances, Property Overrides, Free-Standing Objects, Nested Blueprints |
+| **DNP3 Protocol** | Class 0/1/2/3 Scanning, Unsolicited Messages, IIN Internal Indications, CROB Controls, SBO, WITS Standards |
+| **MQTT & IoT** | MQTT Broker (Port 1883/8883), JSON 'A', Sparkplug B (`spBv1.0`), `NBIRTH`/`DBIRTH`/`DDEATH`, `mosquitto_pub` CLI |
+| **Flow Metering** | Realflo EFM, Coriolis Mass Flow, Gas Flow Run Objects, Low Flow Cutoff, Linearization Scaling |
+| **Diagnostics & Status** | Driver Point Updates ("Top 25" noisy tags), `DBStartup_001.log`, Process Count, Quality Badges (F, H, O, U) |
 
-* **Situational Awareness Color Palette:** Calm grayscale foundations with high-contrast abnormal state indicators (Shape + Red/Amber badges).
+---
 
-* **ViewX Ribbon Utilization:** Practical tutorials covering the `Home`, `Edit`, `Graphics`, and `View` ribbon toolbars, embedded trends, filtered alarm lists, and parameter-driven faceplates.
+## 🖼️ Application Screenshots & Interactive Preview
 
-### 3. Server Architecture, Diagnostics & Maintenance
+| Module | Description | Interface Preview |
+|:---|:---|:---:|
+| **ISA-101 Mimic Sandbox** | Real-time interactive canvas demonstrating situational awareness design, pump status toggling, and wet-well animations. | `Interactive PWA Preview` |
+| **ViewX Ribbon Glossary** | Direct mapping of tools across Home, Edit, Graphics, and View ribbons with agac.ae configuration examples. | `Searchable Glossary` |
+| **DNP3 Step-by-Step** | 4-tier tree architecture with configuration tabs and field parameter matrices. | `DNP3 Execution Guide` |
+| **Diagnostic Terminal** | Practical examples of `mosquitto_sub` and `mosquitto_pub` command syntax for packet simulation. | `CLI Reference Guide` |
 
-* **Server Status Deep Dives:** Diagnosing noisy field instrumentation with **Driver Point Updates**, monitoring read/write lock concurrency, inspecting data cache buffers, and decoding `DBStartup_001.log`.
+---
 
-* **Alarm Rationalization & Redirection:** High-High / Low-Low split routing, deadband hysteresis, runtime tuning, and multi-tier SMS/Email on-call escalation rules.
+## 📁 Complete Repository File Inventory
 
-* **IEC 61131-3 Logic Programs:** Structured Text (ST) and Function Block Diagram (FBD) routines for lead/lag pump alternation and automatic wet well safety interlocks.
-
-## 🖥️ Application Screenshots & UI Modules
-
-| Module View | Features & Engineering Content | 
-| ----- | ----- | 
-| **Overview & Fast Nav** | • Instant fuzzy search indexing across all guides and terms.  • Quick Reference table of standard ports and timeouts.  • Clean agac.ae operational styling. | 
-| **ISA-101 Mimic Preview** | • Dynamic SVG pumping station with wet well level animations.  • Click-activated Context Menus & Pick Actions.  • Live simulated quality tags and event logging stream. | 
-| **DNP3 Implementation** | • 4-tier tree blueprint (`AGAC.DXB.WPS01`).  • Outstation scan class timers (Integrity vs. Event scans).  • Step-by-step point scaling and SBO setup. | 
-| **Glossary & Architecture** | • 100+ industrial definitions with exact database mappings.  • Contextual examples and syntax snippets.  • Coverage of DDK, MQTT, Sparkplug, and SCADAPack x70. | 
-
-## 📂 Complete Repository File Structure
-
-```
+```text
 ecostruxure-geoscada-field-guide/
-├── index.html                  # Universal application shell, glossary, and tutorials
-├── styles.css                  # Industrial Dark/Light CSS design system (WCAG AA compliant)
-├── app.js                      # Routing, search engine, state handling, and interactive mimic
-├── sw.js                       # Service worker with precache and stale-while-revalidate logic
-├── manifest.webmanifest        # W3C Web App Manifest for mobile/desktop installation
-├── offline.html                # High-reliability fallback page when offline
-├── apple-touch-icon.png        # iOS Home Screen icon (180x180)
-├── favicon.ico                 # Multi-resolution desktop tab icon
-├── favicon.svg                 # Scalable modern browser favicon
-├── README.md                   # Repository documentation and engineering guide
-├── icons/                      # Complete PWA icon suite
-│   ├── icon-72.png             # Legacy Android display
-│   ├── icon-96.png             # Standard Android density
-│   ├── icon-128.png            # Web Store listing
-│   ├── icon-144.png            # Windows Metro tile
-│   ├── icon-152.png            # iPad touch icon
-│   ├── icon-192.png            # Standard Android Home Screen (Mandatory)
-│   ├── icon-384.png            # High-DPI Android splash screen
-│   ├── icon-512.png            # Splash screen & PWA install banner (Mandatory)
-│   ├── icon-maskable-192.png   # Adaptive Android maskable icon
-│   ├── icon-maskable-512.png   # Adaptive Android high-res maskable icon
-│   ├── favicon-16x16.png       # Desktop browser tab icon
-│   └── favicon-32x32.png       # Standard desktop browser icon
-└── screenshots/                # Rich PWA installation preview assets
-    ├── screenshot-overview.png # Home screen overview capture
-    ├── screenshot-mimic.png    # Interactive mimic sandbox capture
-    ├── screenshot-dnp3.png     # DNP3 procedure capture
-    └── screenshot-glossary.png # Searchable architecture glossary capture
-
+├── index.html              # PWA shell, sidebar/bottom navigation, searchable glossary & all tutorials
+├── styles.css              # Industrial dark/light theme tokens, fluid typography, safe-area padding
+├── app.js                 # Dynamic search engine, hash routing, install banner, mimic interactive sandbox
+├── sw.js                  # Service Worker precaching, stale-while-revalidate strategy, cache versioning
+├── manifest.webmanifest   # PWA manifest declaring standalone display, scope, theme colors & icon list
+├── offline.html           # Dedicated offline fallback page for uncached network requests
+├── favicon.ico            # Multi-resolution browser tab icon
+├── favicon.svg            # Scalable vector favicon
+├── apple-touch-icon.png   # iOS home screen touch icon (180x180 px)
+└── icons/                 # Complete PWA install & splash icon suite
+    ├── icon-192.png       # Android home screen icon (192x192 px)
+    ├── icon-512.png       # Splash screen and Web Store icon (512x512 px)
+    ├── icon-maskable-192.png  # Adaptive icon for modern Android launchers
+    └── icon-maskable-512.png  # High-DPI adaptive icon
 ```
 
-## 🎨 Asset Directory & Icon Inventory
+---
 
-The application meets all Chromium, Safari, and WebKit PWA installability requirements:
+## 🎨 Icon Set & Visual Assets
 
-```
-┌──────────────────────────┬──────────┬───────────────────────────────────────────┐
-│ File Name                │ Size     │ Target Platform & Purpose                 │
-├──────────────────────────┼──────────┼───────────────────────────────────────────┤
-│ icon-192.png             │ 192×192  │ Android Home Screen (Mandatory)           │
-│ icon-512.png             │ 512×512  │ Android Splash & Store Install            │
-│ icon-maskable-192.png    │ 192×192  │ Adaptive Android rounded/squircle icons   │
-│ icon-maskable-512.png    │ 512×512  │ High-DPI Adaptive Android icons           │
-│ apple-touch-icon.png     │ 180×180  │ Apple iOS WebClip icon                    │
-│ favicon.svg              │ Scalable │ Modern Desktop Browsers                   │
-│ favicon.ico              │ Multi    │ Legacy Fallback                           │
-└──────────────────────────┴──────────┴───────────────────────────────────────────┘
+To ensure 100% compliance with Google Lighthouse PWA audits and Apple iOS Web Clip specifications, place the following icon set into your `/icons/` directory:
 
-```
+| Filename | Dimensions | Purpose |
+|:---|:---:|:---|
+| `favicon.ico` | $16\times 16$, $32\times 32$, $48\times 48$ | Standard browser tab icon |
+| `favicon.svg` | Scalable Vector | High-resolution modern desktop browser address bars |
+| `apple-touch-icon.png` | $180\times 180\text{ px}$ | iOS Home Screen bookmark icon |
+| `icon-192.png` | $192\times 192\text{ px}$ | Standard Android launcher icon (PWA requirement) |
+| `icon-512.png` | $512\times 512\text{ px}$ | PWA install prompt banner and splash screen |
+| `icon-maskable-192.png` | $192\times 192\text{ px}$ | Adaptive Android launcher icon (safe-zone centered) |
+| `icon-maskable-512.png` | $512\times 512\text{ px}$ | Adaptive splash icon for Android 12+ devices |
+
+---
 
 ## 🚀 GitHub Pages Deployment Guide
 
-Follow these steps to deploy your live instance within 2 minutes:
+Deploying the guide takes less than two minutes:
 
-### Method A: Web Browser Upload
-
-1. Open your repository on GitHub (`https://github.com/<your-username>/ecostruxure-geoscada-field-guide`).
-
-2. Drag and drop all files and folders (`index.html`, `styles.css`, `app.js`, `sw.js`, `manifest.webmanifest`, `offline.html`, `icons/`, etc.) into the repository root.
-
-3. Commit changes to `main`.
-
-4. Go to **Settings** $\rightarrow$ **Pages** (under the "Code and automation" left sidebar).
-
-5. Under **Build and deployment** $\rightarrow$ **Branch**, select **`main`** and **`/(root)`**, then click **Save**.
-
-6. Wait 60 seconds; your app will be live at:
-
-   ```
-   https://<your-username>.github.io/ecostruxure-geoscada-field-guide/
-   
+1. **Clone or Download the Repository:**
+   ```bash
+   git clone https://github.com/githubbest729/ecostruxure-geoscada-field-guide.git
+   cd ecostruxure-geoscada-field-guide
    ```
 
-### Method B: Git Command Line
+2. **Commit Your Files:**
+   Ensure `index.html`, `styles.css`, `app.js`, `sw.js`, and `manifest.webmanifest` are present in the repository root.
+   ```bash
+   git add .
+   git commit -m "feat: complete Geo SCADA PWA field guide and tutorials"
+   git push origin main
+   ```
 
+3. **Enable GitHub Pages:**
+   - Go to your repository on GitHub: **Settings $\rightarrow$ Pages**.
+   - Under **Build and deployment $\rightarrow$ Source**, select **Deploy from a branch**.
+   - Select Branch: **`main`** and Folder: **`/(root)`**.
+   - Click **Save**.
+
+4. **Verify Offline Access:**
+   - Navigate to `https://githubbest729.github.io/ecostruxure-geoscada-field-guide/` in Chrome, Safari, or Edge.
+   - Open DevTools (**F12**) $\rightarrow$ **Application** $\rightarrow$ **Service Workers** and verify status: `Activated and running`.
+   - Check the **Offline** box in Network tab; refresh the page to confirm complete offline operation!
+
+---
+
+## 🔄 Cache Management & Version Bumping
+
+When pushing updates to tutorials, scripts, or styles, open `sw.js` and increment the cache version token:
+
+```javascript
+// sw.js
+const CACHE_NAME = 'geoscada-guide-v1.5.0'; // <-- Bump this version string
+const PRECACHE_URLS = [
+  './',
+  './index.html',
+  './styles.css',
+  './app.js',
+  './manifest.webmanifest',
+  './offline.html',
+  './favicon.svg',
+  './apple-touch-icon.png'
+];
 ```
-# Clone the repository
-git clone https://github.com/<your-username>/ecostruxure-geoscada-field-guide.git
-cd ecostruxure-geoscada-field-guide
 
-# Add all files, commit and push to main
-git add .
-git commit -m "feat: release v1.5.0 PWA offline engineering guide"
-git push origin main
+The Service Worker will automatically install the new cache in the background and purge obsolete files upon the user's next visit.
 
-```
+---
 
-## 🔄 Offline Cache & Update Strategy
+## ⚠️ Field Standards & Safety Disclaimer
 
-The app utilizes a dual **Precache + Stale-While-Revalidate** caching strategy:
+> **IMPORTANT SAFETY NOTICE**
+> 
+> Configuration parameters, TCP port numbers, memory offsets, and alarm thresholds documented in this guide represent **agac.ae** engineering standards. Always verify parameters against manufacturer submittals, client specifications, and the Schneider Electric Geo SCADA documentation for your specific software release.
+> 
+> **Never perform remote hand controls, point forcing, or template schema alterations on a live production SCADA server without an approved Permit to Work (PTW) and client operational clearance.**
 
-1. **Initial Visit:** The service worker (`sw.js`) caches all core HTML, CSS, JavaScript, and icons into the local Cache Storage API (`geoscada-guide-v1.5.0`).
+---
 
-2. **Subsequent Visits:** The shell loads instantly from cache (zero network latency), while a background fetch checks GitHub Pages for updates.
-
-3. **Releasing Updates:**
-   To deploy new procedures or glossary terms:
-
-   * Make your content edits in `index.html`.
-
-   * Open `sw.js` and increment the version string:
-
-     ```
-     const CACHE_NAME = 'geoscada-guide-v1.5.1'; // Bumping triggers cache recreation
-     
-     ```
-
-   * Commit and push. Client browsers and installed apps will download the new assets on their next online session.
-
-## ⚠️ agac.ae Field Standards & Disclaimer
-
-* **Safety Notice:** Tagging conventions (`AGAC.<REGION>.<SITE>.<ASSET>`), IP addresses, and alarm severity thresholds in this guide represent standardized `agac.ae` baseline templates. Always verify against specific contract specifications and vendor manuals before deploying configuration changes to a live plant.
-
-* **Permit to Work (PTW):** Never execute direct outstation controls, point overrides, hand controls, or firmware downloads on production systems without an approved Work Permit and operational risk assessment.
-
-* **Vendor Notice:** Independent engineering guide created for field engineers; not an official publication of Schneider Electric SE.
+*Authored by agac.ae SCADA Systems Engineering Team · Independent Technical Reference (Not an official Schneider Electric publication).*
