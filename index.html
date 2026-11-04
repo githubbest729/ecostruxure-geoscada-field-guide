@@ -361,6 +361,107 @@
           <p><span class="tag">Edit tab</span> Bulk engineering utility that repoints animation tags across symbols and mimics.</p>
           <p><span class="tag">Example</span> Duplicate a pump graphic and repoint <code>.Pump1.</code> animations to <code>.Pump2.</code> in seconds.</p>
         </article>
+<h2 id="g-scadapack">SCADAPack E &amp; x70 RTUs</h2>
+        <article class="term" id="term-x70" data-search-item data-title="SCADAPack x70 Range (470 / 474 / 570 / 574)" data-section="Glossary · SCADAPack">
+          <h3>SCADAPack x70 Range (470 / 474 / 570 / 574)</h3>
+          <p>Schneider Electric Smart RTU platform combining EcoStruxure Control Expert logic with native DNP3 and Modbus telemetry. The 47x models are compact; the 57x models add processing power and connectivity.</p>
+          <p><span class="tag">Context</span> Geo SCADA can hold native device configuration and convert a configuration between 47x and 57x hardware from ViewX. Confirm supported conversions for your release.</p>
+          <p><span class="tag">Example</span> Converting a 470 configuration to a 570 when upgrading an expanding booster station, without recreating the I/O table.</p>
+        </article>
+        <article class="term" id="term-remoteconnect" data-search-item data-title="Remote Connect & RTUConfig" data-section="Glossary · SCADAPack">
+          <h3>Remote Connect &amp; RTUConfig</h3>
+          <p>Desktop tools for commissioning SCADAPack RTUs. <strong>Remote Connect</strong> is used for the x70 series (Control Expert based). <strong>RTUConfig / SCADAPack E Configurator</strong> is used for legacy SCADAPack E-Series.</p>
+          <p><span class="tag">Context</span> Configure locally and upload into Geo SCADA, or manage configuration centrally in ViewX and push changes to field RTUs over telemetry.</p>
+          <p><span class="tag">Example</span> A standard base package is built in Remote Connect, then logic and configuration changes are pushed to 30 remote wellheads over telemetry instead of driving to site.</p>
+        </article>
+        <article class="term" id="term-rtuobjects" data-search-item data-title="Centralised RTU Configuration Objects (SCADAPack x70 menu)" data-section="Glossary · SCADAPack">
+          <h3>Centralised RTU Configuration Objects (SCADAPack x70 menu)</h3>
+          <p>Database objects under <strong>Create New → SCADAPack x70</strong> that represent configuration held in the RTU:</p>
+          <p><strong>Analog / Digital / Counter Configuration</strong>: maps terminals and processing attributes in RTU memory.<br><strong>DNP3 Slave Device</strong>: outstation addressing, unsolicited behavior, and event buffers in the controller.<br><strong>Modbus Point Scanner / Slave Device</strong>: onboard Modbus master polling tables and slave presentation.<br><strong>Security Configuration</strong>: authentication levels, DNP3 Secure Authentication (SAv5), access passwords.<br><strong>Firmware Image</strong>: stores controller firmware in Geo SCADA for remote firmware updates.</p>
+          <p><span class="tag">Example</span> Upgrading substation RTU firmware across stations through the <em>Firmware Image</em> object rather than connecting locally by USB. Stage it, test on one RTU, and schedule with operations first.</p>
+        </article>
+        <article class="term" id="term-persistence" data-search-item data-title="Point Persistence Configuration (E-Series)" data-section="Glossary · SCADAPack">
+          <h3>Point Persistence Configuration (E-Series)</h3>
+          <p>A parameter that preserves counter values, totalizers, and setpoints in non-volatile RTU memory across power loss and reboots.</p>
+          <p><span class="tag">Context</span> Critical for custody transfer, billing volume registers, and run-hour meters.</p>
+          <p><span class="tag">Example</span> Daily pump discharge volume registers set to persistent storage so a short power cut does not reset cumulative flow totals to zero.</p>
+        </article>
+        <article class="term" id="term-exclusive" data-search-item data-title="Exclusive Control & Object Reservation" data-section="Glossary · SCADAPack">
+          <h3>Exclusive Control &amp; Object Reservation</h3>
+          <p>A locking mechanism reached from the ViewX context menu (<em>Display Objects under Exclusive Control</em> / <em>Display Objects not under Exclusive Control</em>) that reserves objects for one user.</p>
+          <p><span class="tag">Context</span> Prevents several engineers or operators from configuring or forcing the same RTU, mimic, or logic at once. Check how your release treats other clients while a lock is held.</p>
+          <p><span class="tag">Example</span> An engineer takes Exclusive Control of <code>AGAC.DXB.WPS01</code> during loop testing; release it when finished so operators are not blocked.</p>
+        </article>
+
+        <h2 id="g-realflo">Realflo EFM &amp; Custody Transfer Metering</h2>
+        <article class="term" id="term-realflo" data-search-item data-title="Realflo EFM (Electronic Flow Measurement)" data-section="Glossary · Metering">
+          <h3>Realflo EFM (Electronic Flow Measurement)</h3>
+          <p>Flow computation software for SCADAPack controllers (including the x70 series) that performs AGA, API, and ISO custody-transfer calculations at the outstation. Geo SCADA can parameterise flow runs from ViewX forms and retrieve logs and totals, using Advanced Modbus or native driver protocols.</p>
+          <p><span class="tag">Check</span> Confirm which Realflo functions (log upload, configuration deployment) your Geo SCADA release and RTU firmware support before promising them to a client.</p>
+        </article>
+        <article class="term" id="term-flowrun" data-search-item data-title="Flow Run Object" data-section="Glossary · Metering">
+          <h3>Flow Run Object</h3>
+          <p>The top-level object (<em>Flow Run Gas / Liquid / Water</em>) for one physical metering line. It binds transmitter I/O, orifice or Coriolis parameters, compressibility calculations, and contract-hour accumulation registers.</p>
+        </article>
+        <article class="term" id="term-meterinput" data-search-item data-title="Meter Input Type" data-section="Glossary · Metering">
+          <h3>Meter Input Type</h3>
+          <p>Set on the <strong>Meter Input</strong> tab to match the measurement technique: mass flow (Coriolis), differential pressure (orifice plate), or pulse/frequency (turbine). The label for turbine inputs may differ between versions, so check the form.</p>
+        </article>
+        <article class="term" id="term-inputobj" data-search-item data-title="Input Object Name vs. Input Register" data-section="Glossary · Metering">
+          <h3>Input Object Name vs. Input Register</h3>
+          <p>On x70 targets, inputs are resolved by tag name (for example <code>Input Object Name = temp</code>) rather than static register numbers (<em>Input Register</em>), removing a class of legacy 5-digit Modbus address errors.</p>
+        </article>
+        <article class="term" id="term-rawfs" data-search-item data-title="Raw vs. Engineering Zero / Full Scale" data-section="Glossary · Metering">
+          <h3>Raw vs. Engineering Zero / Full Scale</h3>
+          <p>Linearisation limits mapping raw ADC counts (for example <code>0</code> to <code>32767</code>) to calibrated field units (for example <code>0</code> to <code>500 kg/h</code>). Wrong limits corrupt custody totals, so check against the calibration certificate.</p>
+        </article>
+        <article class="term" id="term-lowflow" data-search-item data-title="Low Flow Cutoff & Hysteresis" data-section="Glossary · Metering">
+          <h3>Low Flow Cutoff &amp; Hysteresis</h3>
+          <p>A noise-suppression threshold that forces the flow rate to zero when differential pressure or mass flow drops below a minimum, so the accumulator does not drift while the line is static. Hysteresis prevents it chattering around the threshold.</p>
+        </article>
+
+        <h2 id="g-diag">Database Performance &amp; Server Status Diagnostics</h2>
+        <p class="muted">Terms from <em>Server Status → Database → Driver Point Updates</em>. Used in <a href="#t5-s4">Tutorial 5, Step 4</a>.</p>
+        <article class="term" id="term-dpu" data-search-item data-title="Driver Point Updates (Live Update Counts)" data-section="Glossary · Diagnostics">
+          <h3>Driver Point Updates (Live Update Counts)</h3>
+          <p>A diagnostic table in the Server Status tool that counts the updates each point has received from field drivers.</p>
+          <p><span class="tag">Context</span> Finds chattering digital inputs and noisy analog transmitters that flood the event pipeline, slow client refresh, and bloat the historian.</p>
+          <p><span class="tag">Example</span> After commissioning a station, check the Top 25 highest-count points to find an unshielded level transmitter producing 60 updates per second.</p>
+        </article>
+        <article class="term" id="term-pointid" data-search-item data-title="Point ID" data-section="Glossary · Diagnostics">
+          <h3>Point ID</h3>
+          <p>A unique integer assigned by the database to each item (for example <code>116146</code>), stable when the item is moved or renamed. Used in internal relationships, queries, and event logs.</p>
+          <p><span class="tag">Illustrative</span> <code>SELECT FullName FROM CDBPoint WHERE ID = 116146</code>. Verify class and column names for your release.</p>
+        </article>
+        <article class="term" id="term-pointname" data-search-item data-title="Point Name (Full Hierarchy Path)" data-section="Glossary · Diagnostics">
+          <h3>Point Name (Full Hierarchy Path)</h3>
+          <p>The absolute dot-delimited path from the Database Bar, for example <code>AGAC.DXB.WPS01.Pump1.Flow</code>: the <code>Flow</code> analog inside <code>Pump1</code>, at station <code>WPS01</code>, region <code>DXB</code>.</p>
+        </article>
+        <article class="term" id="term-updcount" data-search-item data-title="Update Count" data-section="Glossary · Diagnostics">
+          <h3>Update Count</h3>
+          <p>Cumulative number of values, quality changes, or state transitions processed for a point since the driver or server last started.</p>
+          <p><span class="tag">Rule</span> A count far above comparable points suggests an over-aggressive poll rate or a missing deadband.</p>
+        </article>
+        <article class="term" id="term-lastupd" data-search-item data-title="Last Update Timestamp" data-section="Glossary · Diagnostics">
+          <h3>Last Update Timestamp</h3>
+          <p>Time at which the database last processed an update for the point.</p>
+          <p><span class="tag">Rule</span> If the channel shows connected but Last Update is stale, suspect frozen outstation event buffers or wrong DNP3 class assignments.</p>
+        </article>
+        <article class="term" id="term-driverid" data-search-item data-title="Driver Identifier" data-section="Glossary · Diagnostics">
+          <h3>Driver Identifier</h3>
+          <p>The server process that acquires the point data, for example DNP3, Advanced Modbus, MQTT client, or Rockwell CIP. Names vary by release.</p>
+          <p><span class="tag">Context</span> Narrows a performance problem to one protocol, network adapter, or field link.</p>
+        </article>
+        <article class="term" id="term-cache" data-search-item data-title="Data File Cache & Buffers" data-section="Glossary · Diagnostics">
+          <h3>Data File Cache &amp; Buffers</h3>
+          <p>Memory partitions under <em>Database</em> in Server Status that hold recently read data and pending disk writes.</p>
+          <p><span class="tag">Rule</span> Many cache misses or exhausted buffers suggest disk I/O cannot keep up with incoming telemetry.</p>
+        </article>
+        <article class="term" id="term-locks" data-search-item data-title="Lock Diagnostics (Read / Write Locks)" data-section="Glossary · Diagnostics">
+          <h3>Lock Diagnostics (Read / Write Locks)</h3>
+          <p>Counters tracking database access concurrency between driver threads, logic engines, and client sessions.</p>
+          <p><span class="tag">Rule</span> Sustained write-lock spikes can point to poorly scheduled logic programs doing heavy database-wide work. Check logic execution modes first (Procedure 6).</p>
+        </article>
 
         <h2 id="g-logic">Logic &amp; Scripting</h2>
         <article class="term" id="term-st" data-search-item data-title="Structured Text (ST)" data-section="Glossary · Logic">
@@ -720,8 +821,19 @@ Events missing                   unsolicited disabled or event class unassigned<
             <tr><td>20 mA</td><td>4.0 m</td><td>☐</td></tr>
           </tbody>
         </table></div>
+        <h2 id="t5-s4" data-search-item data-title="T5 · Find noisy points with Driver Point Updates" data-section="Tutorial 5">Step 4 · Find noisy points with Driver Point Updates</h2>
+        <ol class="steps">
+          <li>Open <strong>Server Status → Database → Driver Point Updates</strong>.</li>
+          <li>Sort by update count and review the <strong>Top 25</strong>. Note Point ID, Point Name, Count, Last Update, and Driver.</li>
+          <li>For a high analog count, widen the <em>Significant Change</em> / deadband or lower the RTU event generation threshold. For a chattering digital input, check wiring and add a debounce or event filter at the RTU.</li>
+          <li>If the channel is connected but Last Update is stale, check the outstation IIN bits and class assignments.</li>
+          <li>Re-check the table after a few minutes to confirm the count has dropped. Also glance at cache and lock diagnostics if clients feel slow.</li>
+        </ol>
+        <p class="muted small">Terms are defined in the <a href="#g-diag" data-nav="glossary">glossary</a>.</p>
+
         <h3>Verification</h3>
         <ul class="checklist" data-check="t5">
+          <li><label><input type="checkbox"> Top 25 update counts reviewed and noisy points fixed</label></li>
           <li><label><input type="checkbox"> All outstations Online in Server Status</label></li>
           <li><label><input type="checkbox"> Loop sheet signed for every analog and control</label></li>
           <li><label><input type="checkbox"> Forced and simulated values removed</label></li>
@@ -1118,7 +1230,7 @@ END_PROGRAM</code></pre>
       </section>
 
       <footer class="footer">
-        <p>agac.ae · EcoStruxure Geo SCADA Field Engineering Guide · v1.4.0. Independent engineering reference; not an official Schneider Electric document. Verify against vendor documentation.</p>
+        <p>agac.ae · EcoStruxure Geo SCADA Field Engineering Guide · v1.5.0. Independent engineering reference; not an official Schneider Electric document. Verify against vendor documentation.</p>
       </footer>
     </main>
   </div>
