@@ -61,7 +61,7 @@
     });
     if (!found) { name = 'home'; $('[data-view="home"]').hidden = false; }
     currentView = name;
-    var group = /^t\d$/.test(name) ? 'tutorials' : null;
+    var group = /^t\d+[a-z]?$/.test(name) ? 'tutorials' : null;
     navLinks.forEach(function (a) {
       var target = a.getAttribute('data-nav');
       var active = target === name || (a.getAttribute('data-group') === 'tutorials' && group === 'tutorials');

@@ -2,7 +2,7 @@
    Strategy: precache app shell; stale-while-revalidate for same-origin GETs;
    navigation requests fall back to cached index.html, then offline.html.
    Bump VERSION on every release so old caches are purged. */
-const VERSION = 'v1.2.0';
+const VERSION = 'v1.3.0';
 const CACHE = 'geo-scada-guide-' + VERSION;
 
 const PRECACHE = [

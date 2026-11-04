@@ -57,6 +57,10 @@
         <li><a href="#t6" data-nav="t6">6 · Logic Engine (ST)</a></li>
         <li><a href="#t7" data-nav="t7">7 · Historic &amp; Archiving</a></li>
         <li><a href="#t8" data-nav="t8">8 · Security &amp; Roles</a></li>
+        <li class="nav-label">Modular Graphics &amp; Site Procedures</li>
+        <li><a href="#t3b" data-nav="t3b">3B/3C · Symbols &amp; Faceplates</a></li>
+        <li><a href="#t9" data-nav="t9">9 · Station Duplication</a></li>
+        <li><a href="#t10" data-nav="t10">10 · Forcing &amp; Dry Loop Test</a></li>
       </ul>
     </nav>
     <div class="scrim" id="scrim" hidden></div>
@@ -90,6 +94,9 @@
           <a class="card" href="#t6" data-nav="t6"><h2>6 · Logic Engine</h2><p>Structured Text lead/lag logic and execution modes.</p></a>
           <a class="card" href="#t7" data-nav="t7"><h2>7 · Historic &amp; Archiving</h2><p>Significant change, lifetime, archive volumes.</p></a>
           <a class="card" href="#t8" data-nav="t8"><h2>8 · Security &amp; Roles</h2><p>User groups, branch permissions, action confirmation.</p></a>
+          <a class="card" href="#t3b" data-nav="t3b"><h2>3B/3C · Symbols &amp; Faceplates</h2><p>Reusable embedded symbols, relative paths, parameterised faceplates.</p></a>
+          <a class="card" href="#t9" data-nav="t9"><h2>9 · Station Duplication</h2><p>Copy WPS01 to WPS02 with Find &amp; Replace DB References.</p></a>
+          <a class="card" href="#t10" data-nav="t10"><h2>10 · Forcing &amp; Dry Loop Test</h2><p>Hand control of points before the RTU is online.</p></a>
         </div>
         <h2>Quick reference</h2>
         <div class="table-wrap">
@@ -258,6 +265,33 @@
         <article class="term" id="term-events" data-search-item data-title="Event Logging" data-section="Glossary · History &amp; Alarms">
           <h3>Event Logging</h3>
           <p>Time-ordered journal of state changes, operator actions, and system events. This is the audit trail; do not shorten retention below the contractual requirement.</p>
+        </article>
+
+        <h2 id="g-display">Graphics &amp; Display Terms</h2>
+        <article class="term" id="term-relpath" data-search-item data-title="Relative Database Path (Dot Notation)" data-section="Glossary · Graphics &amp; Display">
+          <h3>Relative Database Path (Dot Notation)</h3>
+          <p>A reference whose leading dot (<code>.</code>) points to objects relative to the current container group instead of the absolute root tree.</p>
+          <p><span class="tag">Example</span> Inside <code>AGAC.DXB.WPS01.Pump1</code>, <code>".Status"</code> resolves to <code>AGAC.DXB.WPS01.Pump1.Status</code>. Copied to <code>Pump2</code>, the binding stays valid with no retargeting.</p>
+        </article>
+        <article class="term" id="term-embmimic" data-search-item data-title="Embedded Mimic (Sub-canvas)" data-section="Glossary · Graphics &amp; Display">
+          <h3>Embedded Mimic (Sub-canvas)</h3>
+          <p>An independent mimic embedded inside another mimic as a single nested component. Editing the source updates every mimic that embeds it.</p>
+          <p><span class="tag">Example</span> Drop <code>Pump.Symbol</code> onto the main pipeline layout once per pump.</p>
+        </article>
+        <article class="term" id="term-quality" data-search-item data-title="Quality Overlay Badges" data-section="Glossary · Graphics &amp; Display">
+          <h3>Quality Overlay Badges</h3>
+          <p>Small indicators drawn over point values and symbols to show data health, for example failed comms, hand control (forced), overrange, or unacknowledged alarm. Letters and colors vary by release and display settings.</p>
+          <p><span class="tag">Example</span> If the DNP3 channel disconnects, an analog value changes to a failed-quality style so operators do not act on stale data.</p>
+        </article>
+        <article class="term" id="term-pickmenu" data-search-item data-title="Pick Action: Object Menu" data-section="Glossary · Graphics &amp; Display">
+          <h3>Pick Action: Object Menu</h3>
+          <p>A mouse action on a graphic item that shows the standard context menu of the linked database item when the operator clicks it.</p>
+          <p><span class="tag">Example</span> Clicking the pump impeller opens Start, Stop, Inhibit Alarm, and View Trend commands on screen.</p>
+        </article>
+        <article class="term" id="term-alarmsql" data-search-item data-title="Alarm Filtering by SQL Predicate" data-section="Glossary · Graphics &amp; Display">
+          <h3>Alarm Filtering by SQL Predicate</h3>
+          <p>Restricting an embedded alarm list with query criteria.</p>
+          <p><span class="tag">Example</span> <code>WHERE ("Source" LIKE 'AGAC.DXB.WPS01%') AND ("Severity" &gt;= 500)</code> shows only high and critical alarms for WPS01. Confirm column names and severity direction for your release.</p>
         </article>
 
         <h2 id="g-ribbon">ViewX Ribbon Breakdown</h2>
@@ -866,8 +900,137 @@ END_PROGRAM</code></pre>
         </ul>
       </section>
 
+      <!-- TUTORIAL 3B / 3C -->
+      <section class="view" data-view="t3b" id="t3b" hidden>
+        <h1>Tutorials 3B &amp; 3C · Symbols, Embedded Mimics &amp; Faceplates</h1>
+        <p class="lead">Componentised screens: build a symbol once, embed it everywhere, and use relative paths so copies keep working.</p>
+        <div class="callout warn" role="note"><strong>Best practice.</strong> Use relative dot notation (<code>.Flow</code>, <code>.Status</code>) inside symbols so they can be duplicated across pumps and stations without broken tag paths.</div>
+        <div class="callout safety" role="note"><strong>Safety.</strong> Build and test on the engineering database. Controls on a symbol must follow the same permission and confirmation rules as any other display.</div>
+
+        <h2 id="t3b-tree" data-search-item data-title="3B · Pump group structure (Flow, Status, Symbol)" data-section="Tutorial 3B">Group pattern</h2>
+<pre class="code" data-lang="text"><code>My Demo (Site Group)
+ ├── Default (Overview Mimic)
+ ├── Pump (Group)
+ │    ├── Flow   [Analog Input]
+ │    ├── Status [Binary Input]
+ │    └── Symbol [Mimic - embedded component]
+ ├── Pump 2
+ │    └── Flow / Status / Symbol
+ └── Pump 3
+      └── Flow / Status / Symbol</code></pre>
+
+        <h2 id="t3b-s1" data-search-item data-title="3B · Step 1 Draw the symbol canvas" data-section="Tutorial 3B">Step 1 · Draw the symbol canvas</h2>
+        <ol class="steps">
+          <li>Under the asset group (for example <code>AGAC.DXB.WPS01.Pump1</code>) choose <strong>Create New → Mimic</strong> and name it <code>Symbol</code>.</li>
+          <li>Open <strong>Graphics → Properties</strong> and set a fixed canvas suited to an asset block, for example width <code>220 px</code>, height <code>140 px</code>.</li>
+          <li>Set the background to ISA-101 medium gray (<code>RGB 190,190,190</code>).</li>
+        </ol>
+
+        <h2 id="t3b-s2" data-search-item data-title="3B · Step 2 Level bar, status lamp, numeric display" data-section="Tutorial 3B">Step 2 · Dynamic graphics: level bar, status lamp, numeric display</h2>
+        <h3>Vertical bar graph (flow / level)</h3>
+        <ol class="steps">
+          <li><strong>Graphics → Rectangle</strong>: draw the bar cavity (border only), then an inner rectangle for the fill.</li>
+          <li>Right-click the inner rectangle → <strong>Animations → Size/Position</strong>. Bind Height (or Y-Scale) to <code>".Flow.CurrentValue"</code>.</li>
+          <li>Map <code>Minimum 0.0</code> to height <code>0 px</code> and <code>Maximum 100.0</code> to full scale (for example <code>60 px</code>). Use the real engineering range of the instrument.</li>
+        </ol>
+        <h3>Motor status indicator</h3>
+        <ol class="steps">
+          <li><strong>Graphics → Ellipse</strong>, then <strong>Animations → Fill Colour</strong>.</li>
+          <li>Expression: <code>".Status.CurrentState"</code>. Dot notation reads points within the same group.</li>
+          <li>State 0 (Stopped): dark gray <code>RGB 80,80,80</code>. State 1 (Running): white <code>RGB 255,255,255</code>, or dark green per project standard.</li>
+          <li>State 2 (Fault): red badge with the text <strong>TRIP</strong>. Use flashing only while the alarm is unacknowledged, per the alarm philosophy.</li>
+        </ol>
+        <h3>Numeric display</h3>
+        <p>Add <strong>Graphics → Text</strong> and animate the Text property with:</p>
+<pre class="code" data-lang="text"><code>Format('%.1f m³/h', ".Flow.CurrentValue")</code></pre>
+
+        <h2 id="t3b-s3" data-search-item data-title="3B · Step 3 Embed symbols on station overview" data-section="Tutorial 3B">Step 3 · Embed symbols on the station overview</h2>
+        <ol class="steps">
+          <li>Open the parent overview mimic (<code>Default</code> or <code>Overview</code>).</li>
+          <li>Drag the <code>Symbol</code> mimic from <code>Pump 1</code> in the Database Bar onto the canvas. It is inserted as an <strong>Embedded Mimic</strong>.</li>
+          <li>Repeat for <code>Pump 2</code> and <code>Pump 3</code>.</li>
+        </ol>
+        <p><span class="tag">Benefit</span> Edit the source <code>Symbol</code> and every mimic that embeds it updates, with no re-engineering.</p>
+
+        <h2 id="t3c" data-search-item data-title="3C · Standard faceplate using mimic parameters" data-section="Tutorial 3C">Tutorial 3C · Standard faceplate with mimic parameters</h2>
+        <p>Use one master faceplate instead of a symbol per pump.</p>
+        <ol class="steps">
+          <li>Create a mimic <code>Faceplate_Pump</code> in a shared library group, for example <code>AGAC.System.Library</code>.</li>
+          <li>Click <strong>Graphics → Parameters</strong> and add a string parameter <code>PumpPath</code> (default <code>AGAC.DXB.WPS01.Pump1</code>).</li>
+          <li>Write animations using the parameter:
+<pre class="code" data-lang="text"><code>Server.Point(Mimic.Parameters.PumpPath + ".Status").CurrentState</code></pre>
+          </li>
+          <li>On the overview, set the pump icon <strong>Pick Action</strong>: Action <em>Open Mimic</em>, Mimic <code>AGAC.System.Library.Faceplate_Pump</code>, pass argument <code>PumpPath = "AGAC.DXB.WPS01.Pump2"</code>.</li>
+        </ol>
+        <p class="muted small">Expression and parameter syntax follow the agac.ae example. Confirm the exact object-model calls in the Geo SCADA help for your release.</p>
+        <h3>Verification</h3>
+        <ul class="checklist" data-check="t3b">
+          <li><label><input type="checkbox"> Symbol uses only relative paths (no hard-coded station names)</label></li>
+          <li><label><input type="checkbox"> Copied pump group shows its own values, not Pump 1's</label></li>
+          <li><label><input type="checkbox"> Editing the source symbol updates the overview</label></li>
+          <li><label><input type="checkbox"> Faceplate opens with the correct PumpPath for each pump</label></li>
+        </ul>
+      </section>
+
+      <!-- PROCEDURE 9 -->
+      <section class="view" data-view="t9" id="t9" hidden>
+        <h1>Procedure 9 · Station Duplication with Find &amp; Replace DB References</h1>
+        <p class="lead">Roll out a standard pumping station, for example <code>WPS01</code> → <code>WPS02</code>.</p>
+        <div class="callout safety" role="note"><strong>Safety.</strong> A copied station carries the original outstation IP and address. Keep the copy <em>out of service</em> until its IP, DNP3 address, and channel settings are changed, or both stations will fight for one RTU.</div>
+        <h2 id="t9-s1" data-search-item data-title="P9 · Copy station and repoint references" data-section="Procedure 9">Steps</h2>
+        <ol class="steps">
+          <li>In the Database Bar right-click <code>WPS01</code> → <strong>Copy</strong>.</li>
+          <li>Right-click the region group (<code>DXB</code>) → <strong>Paste</strong>.</li>
+          <li>Rename the copy to <code>WPS02</code>.</li>
+          <li>Open the station <code>Default</code> mimic in edit mode.</li>
+          <li>On the ribbon choose <strong>Edit → Find and Replace DB References</strong>:
+            <ul>
+              <li><em>Find</em>: <code>AGAC.DXB.WPS01.</code></li>
+              <li><em>Replace</em>: <code>AGAC.DXB.WPS02.</code></li>
+              <li><em>Scope</em>: entire mimic, including embedded objects, pick actions, and expressions.</li>
+            </ul>
+          </li>
+          <li>Click <strong>Replace All</strong>, save, and confirm every symbol reads live telemetry from <code>WPS02</code>.</li>
+          <li>Update outstation address, Direct Host IP, channel, and any overrides for the new site before setting anything In Service.</li>
+        </ol>
+        <div class="callout" role="note">Where symbols use relative dot paths (Tutorial 3B) they follow the copy automatically. Find &amp; Replace is mainly for absolute references such as overview bindings and alarm filters.</div>
+        <h3>Verification</h3>
+        <ul class="checklist" data-check="t9">
+          <li><label><input type="checkbox"> No remaining <code>WPS01</code> references in the WPS02 mimics</label></li>
+          <li><label><input type="checkbox"> WPS02 outstation has a unique IP and address</label></li>
+          <li><label><input type="checkbox"> Alarm list filters point at WPS02</label></li>
+          <li><label><input type="checkbox"> WPS01 still works unchanged</label></li>
+        </ul>
+      </section>
+
+      <!-- PROCEDURE 10 -->
+      <section class="view" data-view="t10" id="t10" hidden>
+        <h1>Procedure 10 · Commissioning I/O Override &amp; Forcing Routine</h1>
+        <p class="lead">Dry loop tests before the field RTU is online.</p>
+        <div class="callout safety" role="note"><strong>Safety.</strong> Forcing replaces real telemetry. Never force a point on live plant without an approved permit, tell operations what is forced, and release every point afterward. Check the display for forced-value indicators before handover.</div>
+        <h2 id="t10-s1" data-search-item data-title="P10 · Hand control and override of points" data-section="Procedure 10">Steps</h2>
+        <ol class="steps">
+          <li>Right-click an analog or binary point, for example <code>WetWell_Level_AI</code>.</li>
+          <li>Select <strong>Hand Control</strong> or <strong>Override</strong>:
+            <ul>
+              <li><em>Hand Control</em>: sets the internal point value and marks it with a hand-control quality badge (typically an "H"), overriding field telemetry.</li>
+              <li><em>Release Hand Control</em>: returns the point to the live DNP3 driver scan.</li>
+            </ul>
+          </li>
+          <li>Inspect the mimic: the level fill is proportional, alarms trigger at the high-level thresholds, and the event log records the operator ID that forced the point.</li>
+          <li>Release every forced point and record it on the commissioning sheet.</li>
+        </ol>
+        <h3>Verification</h3>
+        <ul class="checklist" data-check="t10">
+          <li><label><input type="checkbox"> Each forced point listed with who, when, and why</label></li>
+          <li><label><input type="checkbox"> Alarm and mimic behavior confirmed at test values</label></li>
+          <li><label><input type="checkbox"> All hand-control badges cleared at handover</label></li>
+          <li><label><input type="checkbox"> Live RTU values confirmed after release</label></li>
+        </ul>
+      </section>
+
       <footer class="footer">
-        <p>agac.ae · EcoStruxure Geo SCADA Field Engineering Guide · v1.2.0. Independent engineering reference; not an official Schneider Electric document. Verify against vendor documentation.</p>
+        <p>agac.ae · EcoStruxure Geo SCADA Field Engineering Guide · v1.3.0. Independent engineering reference; not an official Schneider Electric document. Verify against vendor documentation.</p>
       </footer>
     </main>
   </div>
